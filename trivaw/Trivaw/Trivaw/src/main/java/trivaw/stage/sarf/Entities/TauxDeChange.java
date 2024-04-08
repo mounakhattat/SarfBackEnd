@@ -1,0 +1,37 @@
+package trivaw.stage.sarf.Entities;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Date;
+
+@Data
+@Entity
+@Table(name = "TauxDeChange")
+
+public class TauxDeChange implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="idTauxDeChange")
+    private Integer idTauxDeChange;
+    private String deviseCible;
+    private String deviseSource;
+    private Integer unite;
+    private double tauxDeChange;
+    private double tauxAchat;
+    private double tauxVente;
+    private LocalDateTime date;
+
+    @JsonIgnore
+
+    @ManyToOne
+    private BureauDeChange bureauDeChange;
+
+
+
+
+
+}
