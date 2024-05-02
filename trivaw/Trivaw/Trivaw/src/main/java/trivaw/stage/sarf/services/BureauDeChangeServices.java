@@ -4,9 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 import trivaw.stage.sarf.Entities.*;
 import trivaw.stage.sarf.Request.SignUp;
 import trivaw.stage.sarf.Responses.MessageResponse;
@@ -16,11 +19,15 @@ import trivaw.stage.sarf.repository.UserRepository;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 @Service
 public class BureauDeChangeServices implements IBureauDeChangeServices {
+    private WebSocketSession webSocketSession;
+
+
 
     @Autowired
     BureauDeChangeRepository bureauDeChangeRepository;
@@ -34,6 +41,9 @@ public class BureauDeChangeServices implements IBureauDeChangeServices {
     private JavaMailSender emailSender;
     private final String FromAddress = "mouna.khattat@esprit.tn";
     private final String SenderName = "SARF Team";
+
+    public BureauDeChangeServices() {
+    }
 
     @Override
     public List<BureauDeChange> getAllBureauDeChange() {
@@ -163,4 +173,23 @@ public class BureauDeChangeServices implements IBureauDeChangeServices {
     System.out.println(message);
     return ResponseEntity.ok(new MessageResponse("successfully  "));
 }
+    @Override
+    public List<BureauDeChange> filterBureauxDeChangeByLocalisation(String localisation) {
+        return bureauDeChangeRepository.findByLocalisation(localisation);
+    }
+
+    public void sendMessageToExchange(Reservation reservation, WebSocketSession session) throws IOException {
+        if (session != null && session.isOpen()) {
+            String message = convertReservationToString(reservation); // Convert Reservation to String
+            session.sendMessage(new TextMessage(message));
+        } else {
+            // Handle the case where the WebSocket session is not open
+        }
+    }
+
+    private String convertReservationToString(Reservation reservation) {
+        String reservationString = "Reservation ID: " + reservation.getIdReservation() + "\n";
+        reservationString += "Devise: " + reservation.getDevise() + "\n";
+        reservationString += "Montant: " + reservation.getMontant() + "\n";        return reservation.toString(); // Example: return reservation.getId() + " - " + reservation.getDetails();
+    }
 }

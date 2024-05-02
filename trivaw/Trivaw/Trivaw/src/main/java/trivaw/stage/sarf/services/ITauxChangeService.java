@@ -21,5 +21,11 @@ public interface ITauxChangeService {
 
     TauxDeChange createTauxDeChangeByUser(Integer idUser, TauxDeChange a);
     List<TauxDeChange> getTauxDeChangeByBureau(Integer idBureauDeChange);
+    List<Object[]> findTauxDeChangeAndBureauNomSortedByTauxAchatAscForDevise(String deviseSource);
+    List<Object[]> findTauxDeChangeAndBureauNomSortedByTauxVenteAscForDevise(String deviseSource);
+
+
+
+
 
 }

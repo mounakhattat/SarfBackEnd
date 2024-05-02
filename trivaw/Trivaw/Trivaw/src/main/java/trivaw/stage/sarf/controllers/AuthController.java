@@ -31,7 +31,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import trivaw.stage.sarf.services.*;
-@CrossOrigin("http://localhost:4200")
+@CrossOrigin("*")
 @RestController
 
 @RequestMapping("/api/auth")

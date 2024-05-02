@@ -1,10 +1,12 @@
 package trivaw.stage.sarf.Entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -20,12 +22,11 @@ public class TauxDeChange implements Serializable {
     private String deviseCible;
     private String deviseSource;
     private Integer unite;
-    private double tauxDeChange;
     private double tauxAchat;
     private double tauxVente;
-    private LocalDateTime date;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate date;
 
-    @JsonIgnore
 
     @ManyToOne
     private BureauDeChange bureauDeChange;

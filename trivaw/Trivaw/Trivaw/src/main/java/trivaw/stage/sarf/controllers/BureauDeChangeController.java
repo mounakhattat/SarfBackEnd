@@ -1,9 +1,11 @@
 package trivaw.stage.sarf.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import trivaw.stage.sarf.Entities.Account;
 import trivaw.stage.sarf.Entities.BureauDeChange;
+import trivaw.stage.sarf.Entities.Reservation;
 import trivaw.stage.sarf.Entities.User;
 import trivaw.stage.sarf.services.IBureauDeChangeServices;
 
@@ -49,4 +51,9 @@ public class BureauDeChangeController {
     public void updateBureauDeChangeByUser(@PathVariable("idUser") Integer idUser, @RequestBody BureauDeChange a) {
          bureauDeChangeServices.updateBureauDeChangeByUser(idUser, a);
     }
+    @GetMapping("/filterBureauxDeChangeByLocalisation/{localisation}")
+    public List<BureauDeChange> filterBureauxDeChangeByLocalisation(@PathVariable String localisation) {
+        return bureauDeChangeServices.filterBureauxDeChangeByLocalisation(localisation);
+    }
+
 }

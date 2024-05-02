@@ -29,6 +29,7 @@ public class BureauDeChange implements Serializable {
     @OneToOne
     @JoinColumn(name = "idUser") // Spécifie la clé étrangère
     private User user;
+    @JsonIgnore     // nrajja3ha l taux
 
     @OneToMany( cascade = CascadeType.ALL ,mappedBy = "bureauDeChange")
     private List<TauxDeChange> tauxDeChangeList;

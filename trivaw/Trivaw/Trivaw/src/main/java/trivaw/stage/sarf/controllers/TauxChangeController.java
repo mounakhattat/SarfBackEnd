@@ -55,4 +55,15 @@ public class TauxChangeController {
         return iTauxChangeService.getTauxDeChangeByBureau(idBureauDeChange);
     }
 
+    @GetMapping("/TriAchatDevise/{deviseSource}")
+    public List<Object[]> getTauxDeChangeSortedByTauxAchatAscForDevise(@PathVariable String deviseSource) {
+        return iTauxChangeService.findTauxDeChangeAndBureauNomSortedByTauxAchatAscForDevise(deviseSource);
+    }
+
+
+    @GetMapping("/TriVenteDevise/{deviseSource}")
+    public List<Object[]> getTauxDeChangeSortedByTauxVenteAscForDevise(@PathVariable String deviseSource) {
+        return iTauxChangeService.findTauxDeChangeAndBureauNomSortedByTauxVenteAscForDevise(deviseSource);
+    }
+
 }

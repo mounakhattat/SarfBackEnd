@@ -13,5 +13,9 @@ public interface TauxChangeRepository extends JpaRepository<TauxDeChange,Integer
     List<TauxDeChange> getTauxDeChangeByUser(@Param("idUser") Integer idUser);
     @Query("SELECT b FROM TauxDeChange b WHERE b.bureauDeChange.idBureauDeChange = :idBureauDeChange")
     List<TauxDeChange> findByIdBureauDeChange(@Param("idBureauDeChange") Integer idBureauDeChange);
+    @Query("SELECT t, b.nom FROM TauxDeChange t JOIN t.bureauDeChange b WHERE t.deviseSource = :deviseSource ORDER BY t.tauxAchat ASC")
+    List<Object[]> findTauxDeChangeAndBureauNomSortedByTauxAchatAscForDevise(@Param("deviseSource") String deviseSource);
+    @Query("SELECT t, b.nom FROM TauxDeChange t JOIN t.bureauDeChange b WHERE t.deviseSource = :deviseSource ORDER BY t.tauxVente ASC")
+    List<Object[]> findTauxDeChangeAndBureauNomSortedByTauxVenteAscForDevise(@Param("deviseSource") String deviseSource);
 
 }

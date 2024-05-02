@@ -7,7 +7,9 @@ import trivaw.stage.sarf.Entities.TauxDeChange;
 import trivaw.stage.sarf.repository.BureauDeChangeRepository;
 import trivaw.stage.sarf.repository.TauxChangeRepository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -34,7 +36,6 @@ public class TauxChangeService implements ITauxChangeService{
     public TauxDeChange updateTauxDeChange(Integer idTauxDeChange, TauxDeChange a) {
         TauxDeChange existingTauxDeChange = tauxChangeRepository.findById(idTauxDeChange).orElse(null);
         if (existingTauxDeChange != null) {
-            existingTauxDeChange.setTauxDeChange(a.getTauxDeChange());
             existingTauxDeChange.setTauxAchat(a.getTauxAchat());
             existingTauxDeChange.setTauxVente(a.getTauxVente());
             existingTauxDeChange.setDeviseCible(a.getDeviseCible());
@@ -63,13 +64,15 @@ public class TauxChangeService implements ITauxChangeService{
         if (tauxDeChangee != null && !tauxDeChangee.isEmpty()) {
             for (TauxDeChange tauxDeChange : tauxDeChangee) {
                 if (tauxDeChange.getIdTauxDeChange().equals(idTauxDeChange)) {
-                    tauxDeChange.setTauxDeChange(a.getTauxDeChange());
                     tauxDeChange.setTauxAchat(a.getTauxAchat());
                     tauxDeChange.setTauxVente(a.getTauxVente());
                     tauxDeChange.setDeviseCible(a.getDeviseCible());
                     tauxDeChange.setDeviseSource(a.getDeviseSource());
-                    LocalDateTime localDateTime = LocalDateTime.now();
-                    tauxDeChange.setDate(localDateTime);
+                    // Formater la date en utilisant le motif "yyyy-MM-dd"
+                    LocalDate currentDate = LocalDate.now();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    String formattedDate = currentDate.format(formatter);
+                    tauxDeChange.setDate(LocalDate.parse(formattedDate, formatter));
                 }
             }
                    return tauxChangeRepository.saveAll(tauxDeChangee);
@@ -85,10 +88,11 @@ public class TauxChangeService implements ITauxChangeService{
         tauxDeChange.setTauxVente(a.getTauxVente());
         tauxDeChange.setDeviseSource(a.getDeviseSource());
         tauxDeChange.setDeviseCible(a.getDeviseCible());
-        tauxDeChange.setTauxDeChange(a.getTauxDeChange());
         tauxDeChange.setBureauDeChange(bureauDeChange);
-        LocalDateTime localDateTime = LocalDateTime.now();
-        tauxDeChange.setDate(localDateTime);
+        LocalDate currentDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formattedDate = currentDate.format(formatter);
+        tauxDeChange.setDate(LocalDate.parse(formattedDate, formatter));
         tauxChangeRepository.save(tauxDeChange);
 
         return tauxChangeRepository.save(tauxDeChange);
@@ -99,5 +103,15 @@ public class TauxChangeService implements ITauxChangeService{
         // Par exemple, vous pouvez appeler votre repository pour récupérer les taux de change en fonction de l'ID du bureau
         return tauxChangeRepository.findByIdBureauDeChange(idBureauDeChange);
     }
+    public List<Object[]> findTauxDeChangeAndBureauNomSortedByTauxAchatAscForDevise(String deviseSource) {
+        return tauxChangeRepository.findTauxDeChangeAndBureauNomSortedByTauxAchatAscForDevise(deviseSource);
+    }
+
+    public List<Object[]> findTauxDeChangeAndBureauNomSortedByTauxVenteAscForDevise(String deviseSource) {
+        return tauxChangeRepository.findTauxDeChangeAndBureauNomSortedByTauxVenteAscForDevise(deviseSource);
+    }
+
+
+
 
 }

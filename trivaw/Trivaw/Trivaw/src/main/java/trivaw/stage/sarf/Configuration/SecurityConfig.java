@@ -1,4 +1,6 @@
 package trivaw.stage.sarf.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import trivaw.stage.sarf.Jwt.AuthEntryPointJwt;
 import trivaw.stage.sarf.Jwt.AuthTokenFilter;
 import trivaw.stage.sarf.services.UserDetailsServiceImpl;
@@ -21,7 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class SecurityConfig { // extends WebSecurityConfigurerAdapter {
+public class SecurityConfig  implements WebMvcConfigurer { // extends WebSecurityConfigurerAdapter {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
 
@@ -98,6 +100,12 @@ public class SecurityConfig { // extends WebSecurityConfigurerAdapter {
                 .antMatchers("/Reclamation/**").permitAll()
                 .antMatchers("/BureauDeChange/**").permitAll()
                 .antMatchers("/TauxDeChange/**").permitAll()
+                .antMatchers("/reservation/**").permitAll()
+                .antMatchers("/ws/**").permitAll()
+
+
+
+
 
 
 
@@ -109,5 +117,9 @@ public class SecurityConfig { // extends WebSecurityConfigurerAdapter {
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/ws").allowedOrigins("http://localhost:4200");
     }
 }
