@@ -84,14 +84,10 @@ public class UserService implements IUserService {
         if (existingUser != null) {
             existingUser.setLastName(user.getLastName());
             existingUser.setFirstName(user.getFirstName());
-            existingUser.setBirthDate(user.getBirthDate());
             existingUser.setAge(user.getAge());
             existingUser.setHousing(user.getHousing());
             existingUser.setNumPhone(user.getNumPhone());
-            existingUser.setPlaceBirth(user.getPlaceBirth());
-            existingUser.setSex(user.getSex());
-            existingUser.setJob(user.getJob());
-            existingUser.setPostalCode(user.getPostalCode());
+
             return userRepository.save(existingUser);
         } else {
             return null;
@@ -145,7 +141,7 @@ public class UserService implements IUserService {
     }
 
 
-    public int calculateUserScore(Integer idUser) {
+  /*  public int calculateUserScore(Integer idUser) {
         int score = 0;
         User user = userRepository.findById(idUser).orElse(null);
 
@@ -186,7 +182,7 @@ public class UserService implements IUserService {
 
         return score;
     }
-
+*/
     @Override
     public User banUser(Integer idUser, int nbr) {
      User acc = userRepository.findById(idUser).orElse(null);

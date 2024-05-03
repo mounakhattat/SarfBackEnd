@@ -1,18 +1,16 @@
 package trivaw.stage.sarf.Entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Transactional
@@ -29,20 +27,16 @@ public class User implements Serializable {
     private ERole roles ;
     private String username;
     private Integer age;
-    private Date birthDate;
-    private String placeBirth;
-    private String job;
-    private String sex;
+
     private String housing;
-    private Integer postalCode;
+
     private String email;
     private boolean actived;
     private String numPhone;
     private String password;
     private Date dateCreation;
-    private Float Salary;
 
-    private Integer KidsNumber;
+
     private String newPassword;
 private String code;
 private Boolean banned;
@@ -129,5 +123,8 @@ private Date bannedPeriode;
     }
     @OneToOne(mappedBy = "user")
     private BureauDeChange bureauDeChange;
+@JsonIgnore
+    @OneToMany( cascade = CascadeType.ALL ,mappedBy = "user")
+    private List<Enchere> encheres;
 
 }

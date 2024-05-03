@@ -228,10 +228,12 @@ public class UserController {
         }
     }
 
-    @GetMapping("/calculateUserScore/{IdUser}")
+   /* @GetMapping("/calculateUserScore/{IdUser}")
     public Integer calculateUserScore(@PathVariable("IdUser") Integer idUser) {
         return userService.calculateUserScore(idUser);
     }
+    */
+
     @PutMapping("/banUser/{idUser}/{nbr}")
     @ResponseBody
     public User banUser(@PathVariable("idUser") Integer idUser, @PathVariable("nbr") int nbr) {

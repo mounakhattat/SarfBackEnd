@@ -124,6 +124,7 @@ public class AuthController {
         user.setPassword(encoder.encode(signUpRequest.getPassword()));
         user.setUsername(signUpRequest.getUsername());
         user.setRoles(userRoleEnum); // Utilisation de setRoles pour définir le rôle de l'utilisateur
+        user.setNumPhone(signUpRequest.getNumPhone());
       String code = codeConfirmationService.generateCode();
    twilioService.sendSms(To, From, code);
         user.setCode(code);

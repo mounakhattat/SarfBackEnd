@@ -15,6 +15,10 @@ public class SignUp {
   @Size(max = 50)
     @Email
     private String email;
+    @NotBlank
+    @Size(max = 50)
+    @Email
+    private String numPhone;
 
     private ERole role;
 
@@ -63,5 +67,11 @@ public class SignUp {
     }
 
 
+    public String getNumPhone() {
+        return numPhone;
+    }
 
+    public void setNumPhone(String numPhone) {
+        this.numPhone = numPhone;
+    }
 }
