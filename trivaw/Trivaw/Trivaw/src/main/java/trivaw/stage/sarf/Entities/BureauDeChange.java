@@ -33,8 +33,9 @@ public class BureauDeChange implements Serializable {
 
     @OneToMany( cascade = CascadeType.ALL ,mappedBy = "bureauDeChange")
     private List<TauxDeChange> tauxDeChangeList;
-
-
+@JsonIgnore
+@OneToMany ( cascade = CascadeType.ALL ,mappedBy = "bureauDeChange")
+    private List<Stock> stocks;
 
 
 }

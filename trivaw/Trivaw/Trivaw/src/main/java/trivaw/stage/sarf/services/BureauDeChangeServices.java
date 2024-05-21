@@ -4,16 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
+import trivaw.stage.sarf.Configuration.WebSocketEndpoint;
 import trivaw.stage.sarf.Entities.*;
 import trivaw.stage.sarf.Request.SignUp;
 import trivaw.stage.sarf.Responses.MessageResponse;
 import trivaw.stage.sarf.repository.BureauDeChangeRepository;
+import trivaw.stage.sarf.repository.ReservationRepository;
 import trivaw.stage.sarf.repository.TauxChangeRepository;
 import trivaw.stage.sarf.repository.UserRepository;
 
@@ -21,22 +21,29 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 public class BureauDeChangeServices implements IBureauDeChangeServices {
     private WebSocketSession webSocketSession;
 
-
-
+@Autowired
+UserService userService;
+WebSocketEndpoint webSocketEndpoint;
     @Autowired
     BureauDeChangeRepository bureauDeChangeRepository;
+    @Autowired
+    ReservationRepository reservationRepository;
     @Autowired
     UserRepository userRepository;
     @Autowired
     PasswordEncoder encoder;
     @Autowired
     TauxChangeRepository tauxChangeRepository;
+    @Autowired
+    ReservationService reservationService;
     @Autowired
     private JavaMailSender emailSender;
     private final String FromAddress = "mouna.khattat@esprit.tn";
@@ -178,18 +185,93 @@ public class BureauDeChangeServices implements IBureauDeChangeServices {
         return bureauDeChangeRepository.findByLocalisation(localisation);
     }
 
-    public void sendMessageToExchange(Reservation reservation, WebSocketSession session) throws IOException {
-        if (session != null && session.isOpen()) {
-            String message = convertReservationToString(reservation); // Convert Reservation to String
-            session.sendMessage(new TextMessage(message));
+    public void sendMessageToExchange(Reservation reservation, Integer idBureauDeChange , Integer idUser) throws IOException {
+        BureauDeChange bureauDeChange = getBureauDeChangeById(idBureauDeChange);
+        Integer userId = bureauDeChange.getUser().getIdUser();
+        String message = convertReservationToString(reservation,idUser); // Convert Reservation to String
+
+        if (userId != null) {
+            CopyOnWriteArrayList<WebSocketSession> sessions = WebSocketEndpoint.getSessions();
+            // Envoyer le message WebSocket à toutes les sessions
+            for (WebSocketSession session : sessions) {
+                System.out.println(session + "CCCCCCCCCCCCCCCCC");
+
+                URI uri = session.getUri();
+                Integer userIdFromUri = extractUserIdFromUri(uri);
+
+                if (session != null && session.isOpen() && userIdFromUri != null && userIdFromUri.equals(userId)) {
+                    session.sendMessage(new TextMessage(message));
+                }
+            }
         } else {
-            // Handle the case where the WebSocket session is not open
+            // Gérer le cas où le bureau de change n'est pas trouvé
         }
     }
 
-    private String convertReservationToString(Reservation reservation) {
-        String reservationString = "Reservation ID: " + reservation.getIdReservation() + "\n";
-        reservationString += "Devise: " + reservation.getDevise() + "\n";
-        reservationString += "Montant: " + reservation.getMontant() + "\n";        return reservation.toString(); // Example: return reservation.getId() + " - " + reservation.getDetails();
+
+
+    private Integer extractUserIdFromUri(URI uri) {
+        String query = uri.getQuery();
+        if (query != null) {
+            String[] queryParams = query.split("&");
+            for (String param : queryParams) {
+                if (param.startsWith("userId=")) {
+                    String userIdString = param.substring("userId=".length());
+                    return Integer.parseInt(userIdString);
+                }
+            }
+        }
+        return null;
     }
+
+    private String convertReservationToString(Reservation reservation , Integer idUser) {
+        User user = userService.getUserById(idUser);
+        String userId = user.getUsername();
+        String reservationString = "Vous avez une nouvelle  reservation d'après " + userId ;
+
+
+        return reservationString;
+    }
+
+    // Méthode pour récupérer les réservations associées à un bureau de change spécifique
+    // Méthode pour récupérer les réservations associées à un bureau de change spécifique
+    // Méthode pour récupérer les réservations associées à un bureau de change spécifique
+  /*  public List<Reservation> getReservationsByBureauDeChange(Integer idBureauDeChange) {
+        Optional<BureauDeChange> bureauDeChangeOptional = bureauDeChangeRepository.findById(idBureauDeChange);
+        if (bureauDeChangeOptional.isPresent()) {
+            BureauDeChange bureauDeChange = bureauDeChangeOptional.get();
+            // Vérifiez si le bureau de change a le rôle "bureau de change"
+            if (bureauDeChange.getUser().getRoles() == ERole.ROLE_BUREAU_DE_CHANGE) {
+                return bureauDeChange.getUser().getReservations(); // Utilisez la relation pour récupérer les réservations
+            } else {
+                // Gérer le cas où le bureau de change n'a pas le rôle approprié
+                return Collections.emptyList(); // ou lancer une exception
+            }
+        } else {
+            // Gérer le cas où le bureau de change n'est pas trouvé
+            return Collections.emptyList(); // ou lancer une exception
+        }
+    }
+
+   */
+
+    // Méthode pour récupérer les réservations associées à un bureau de change spécifique
+    /*public List<Reservation> getReservationsByBureauDeChange(Integer idUser) {
+            return reservationRepository.findByBureauDeChangeId(idUser);
+        }
+
+     */
+
+    public List<Reservation> getReservationsByUser(Integer idUser) {
+        BureauDeChange bureauDeChange= getBureauDeChangeByUser(idUser);
+List<Reservation>  reservations= reservationRepository.findByBureauDeChangeId(bureauDeChange.getIdBureauDeChange());
+
+        return reservations;
+    }
+
+
+
+
+
+
 }

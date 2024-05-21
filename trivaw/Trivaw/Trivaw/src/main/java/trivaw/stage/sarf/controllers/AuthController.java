@@ -71,26 +71,7 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LogIn loginRequest) {
-        Optional<User> u = userRepository.findByUsername(loginRequest.getUsername());
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
-
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        if (!u.get().isActived()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Votre compte n'est pas activé."));
-        }
-            List<String> roles = userDetails.getAuthorities().stream()
-                    .map(item -> item.getAuthority())
-                    .collect(Collectors.toList());
-
-            return ResponseEntity.ok(new JwtResponse(jwt,
-                    userDetails.getIdUser(),
-                    userDetails.getUsername(),
-                    userDetails.getEmail(),
-                    roles));
+        return userService.authenticateUser(loginRequest);
     }
     @Value("${app.twillio.toPhoneNo}")
     private String To;

@@ -57,4 +57,10 @@ public class JwtUtils {
 
         return false;
     }
+
+    public Integer extractUserId(String token) {
+        Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
+        // Supposons que l'ID de l'utilisateur soit stocké dans les revendications du jeton JWT sous la clé "userId"
+        return Integer.parseInt(claims.get("userId", String.class));
+    }
 }

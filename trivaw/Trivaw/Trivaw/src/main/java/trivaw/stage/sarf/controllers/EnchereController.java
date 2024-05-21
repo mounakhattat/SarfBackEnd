@@ -11,6 +11,8 @@ import trivaw.stage.sarf.Entities.Enchere;
 import trivaw.stage.sarf.Entities.User;
 import trivaw.stage.sarf.services.EnchereService;
 
+import javax.mail.MessagingException;
+import java.io.IOException;
 import java.util.List;
 
 @CrossOrigin("*")
@@ -25,6 +27,7 @@ public class EnchereController {
 
     @GetMapping("/getAllEnchere")
     public List<Enchere> getAllEnchere() {
+
         return enchereService.getAllEnchere();
 
     }
@@ -50,9 +53,14 @@ public class EnchereController {
     }
 
     */
+
+
+
+    // enchere tjrs Vente
     @PostMapping("/creerEnchere/{idUser}")
     public ResponseEntity<Enchere> creerEnchere(@RequestBody Enchere enchere, @PathVariable Integer idUser) {
         Enchere nouvelleEnchere = enchereService.creerEnchere(enchere, idUser);
+
         return new ResponseEntity<>(nouvelleEnchere, HttpStatus.CREATED);
     }
 

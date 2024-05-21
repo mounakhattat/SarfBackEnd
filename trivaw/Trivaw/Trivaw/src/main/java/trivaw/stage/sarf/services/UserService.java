@@ -1,5 +1,16 @@
 package trivaw.stage.sarf.services;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.RequestBody;
 import trivaw.stage.sarf.Entities.User;
+import trivaw.stage.sarf.Jwt.JwtUtils;
+import trivaw.stage.sarf.Request.LogIn;
+import trivaw.stage.sarf.Responses.JwtResponse;
+import trivaw.stage.sarf.Responses.MessageResponse;
 import trivaw.stage.sarf.repository.AccountRepository;
 import trivaw.stage.sarf.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +21,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
+import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -21,8 +34,10 @@ public class UserService implements IUserService {
     private static final String TEXT = "To confirm your register click here: ";
     @Autowired
     private UserRepository userRepository;
-
-
+    @Autowired
+    AuthenticationManager authenticationManager;
+    @Autowired
+    JwtUtils jwtUtils;
     @Autowired
     PasswordEncoder passwordEncoder;
     @Autowired
@@ -41,6 +56,10 @@ public class UserService implements IUserService {
     @Override
     public User getUserById(Integer idUser) {
         return userRepository.findById(idUser).orElse(null);
+    }
+    @Override
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username).orElse(null);
     }
 
 
@@ -197,6 +216,37 @@ public class UserService implements IUserService {
         return userRepository.findVisitors();
     }
 
+@Override
+    public ResponseEntity<?> authenticateUser(LogIn loginRequest ) {
+        Optional<User> u = userRepository.findByUsername(loginRequest.getUsername());
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    Authentication authenticationd = SecurityContextHolder.getContext().getAuthentication();
+    System.out.println(authenticationd+"tytytyyyyyyyyyyy");
+
+    String jwt = jwtUtils.generateJwtToken(authentication);
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+    System.out.println(userDetails+"eeeeeeeeeeeeeeeeeeeee");
+
+    userDetails.setCurrentUserId(userDetails.getIdUser()); // Stocke l'ID de l'utilisateur dans les attributs de session WebSocket
+        System.out.println(userDetails.getIdUser()+"ffffffffffffffffffffffffff");
+        System.out.println(userDetails.getCurrentUserId()+"lokokkokokokokk");
 
 
-}
+        if (!u.get().isActived()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Votre compte n'est pas activé."));
+        }
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(item -> item.getAuthority())
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(new JwtResponse(jwt,
+                userDetails.getIdUser(),
+                userDetails.getUsername(),
+                userDetails.getEmail(),
+                roles));
+    }
+
+    }

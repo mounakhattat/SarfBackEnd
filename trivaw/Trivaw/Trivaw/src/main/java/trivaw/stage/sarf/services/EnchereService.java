@@ -3,14 +3,13 @@ package trivaw.stage.sarf.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import trivaw.stage.sarf.Entities.Account;
-import trivaw.stage.sarf.Entities.ERole;
-import trivaw.stage.sarf.Entities.Enchere;
-import trivaw.stage.sarf.Entities.User;
+import trivaw.stage.sarf.Entities.*;
 import trivaw.stage.sarf.repository.EnchereRepository;
+import trivaw.stage.sarf.repository.StockRepository;
 import trivaw.stage.sarf.repository.UserRepository;
 
 import javax.persistence.EntityNotFoundException;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -23,6 +22,9 @@ public class EnchereService  implements  IEnchereService {
     EnchereRepository enchereRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    StockRepository stockRepository;
+
     @Override
     public List<Enchere> getAllEnchere() {
         return enchereRepository.findAll();
@@ -56,6 +58,8 @@ public class EnchereService  implements  IEnchereService {
                 .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé avec l'ID : " + idUser));
 
         enchere.setStatus("en cours");
+        enchere.setType("Vente");
+
         enchere.setUser(utilisateur);
 
         return enchereRepository.save(enchere);
@@ -73,7 +77,7 @@ public class EnchereService  implements  IEnchereService {
         enchereRepository.save(enchere);
     }
 
-    @Scheduled(fixedRate = 60000) // Vérifie toutes les minutes
+ @Scheduled(fixedRate = 60000) // Vérifie toutes les minutes
     public void cloturerEncheresExpirees() {
         List<Enchere> encheresExpirees = detecterEncheresExpirees();
         if (!encheresExpirees.isEmpty()) {
@@ -112,13 +116,24 @@ public class EnchereService  implements  IEnchereService {
                     // Vérifier si l'utilisateur est un bureau de change
                     if (bureauDeChange.getRoles() == ERole.ROLE_BUREAU_DE_CHANGE) {
                         // Mettre à jour le taux proposé par le bureau de change
-                        // Vérifier si le taux proposé est le plus bas
-                        if (enchere.getTauxPropose() == null || tauxPropose < enchere.getTauxPropose()) {
+                        // Vérifier si le taux proposé est le plus elevee
+                        if (enchere.getTauxPropose() == null || tauxPropose > enchere.getTauxPropose()) {
                             // Mettre à jour le taux proposé par le bureau de change
                             enchere.setTauxPropose(tauxPropose);
                             System.out.println(bureauDeChange.getUsername());
                         enchere.setWinner(bureauDeChange.getUsername());
                             System.out.println(bureauDeChange.getUsername());
+                            BigDecimal montant = BigDecimal.valueOf(enchere.getMontant()); // Convertir en BigDecimal
+                            String devise = enchere.getDevise(); // Supposons que cette méthode existe
+                            Stock stock = stockRepository.findByDevise(devise);
+                            if (stock != null) {
+                                BigDecimal montantStock = BigDecimal.valueOf(stock.getQuantite()); // Convertir en BigDecimal
+                                if ("Vente".equalsIgnoreCase(enchere.getType())) {
+                                    // Addition pour le type vente
+                                    BigDecimal nouveauMontant = montantStock.add(montant);
+                                    stock.setQuantite(nouveauMontant.doubleValue()); // Convertir de nouveau en double si nécessaire
+                                }
+                            }
                             // Sauvegarder les modifications de l'enchère
                             return enchereRepository.save(enchere);
                         } else {

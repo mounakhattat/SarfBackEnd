@@ -1,6 +1,7 @@
 package trivaw.stage.sarf.services;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import trivaw.stage.sarf.Entities.BureauDeChange;
 import trivaw.stage.sarf.Entities.Reservation;
 import trivaw.stage.sarf.Request.SignUp;
@@ -19,4 +20,5 @@ public interface IBureauDeChangeServices {
     BureauDeChange  updateBureauDeChangeByUser (Integer idUser, BureauDeChange bureauDeChange);
     ResponseEntity<?> registerUserAndAssignBureau(SignUp signUpRequest) throws MessagingException, UnsupportedEncodingException;
     List<BureauDeChange> filterBureauxDeChangeByLocalisation(String localisation);
+    List<Reservation> getReservationsByUser(Integer idUser);
 }

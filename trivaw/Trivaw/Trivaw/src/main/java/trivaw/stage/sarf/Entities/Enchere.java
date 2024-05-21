@@ -21,6 +21,7 @@ public class Enchere implements Serializable {
     private  Double montant;
     private  String devise;
 
+    private  String type;
 
     private LocalDateTime dateDebut;
   //  @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
@@ -34,12 +35,7 @@ public class Enchere implements Serializable {
     private User user;
 
 
-    public String getNomBureauDeChange() {
-        if (user != null && user.getRoles() == ERole.ROLE_BUREAU_DE_CHANGE) {
-            return user.getBureauDeChange().getNom(); // Supposons que le nom du bureau de change soit stocké dans l'attribut "nom" de l'entité User
-        }
-        return null;
-    }
+
 
 
 }

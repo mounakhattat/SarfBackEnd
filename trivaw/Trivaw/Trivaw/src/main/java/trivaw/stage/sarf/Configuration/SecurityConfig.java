@@ -1,6 +1,7 @@
 package trivaw.stage.sarf.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import trivaw.stage.sarf.Entities.Reservation;
 import trivaw.stage.sarf.Jwt.AuthEntryPointJwt;
 import trivaw.stage.sarf.Jwt.AuthTokenFilter;
 import trivaw.stage.sarf.services.UserDetailsServiceImpl;
@@ -103,6 +104,8 @@ public class SecurityConfig  implements WebMvcConfigurer { // extends WebSecurit
                 .antMatchers("/reservation/**").permitAll()
                 .antMatchers("/ws/**").permitAll()
                 .antMatchers("/enchere/**").permitAll()
+                .antMatchers("/reservation/**").permitAll()
+                .antMatchers("/Stock/**").permitAll()
 
 
 

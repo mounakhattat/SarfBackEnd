@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Service;
 import trivaw.stage.sarf.Entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,7 +26,15 @@ private String role;
     private String email;
     @JsonIgnore
     private String password;
+    private Integer currentUserId;
 
+    public Integer getCurrentUserId() {
+        return currentUserId;
+    }
+
+    public void setCurrentUserId(Integer currentUserId) {
+        this.currentUserId = currentUserId;
+    }
 
     private Collection<? extends GrantedAuthority> authorities;
 

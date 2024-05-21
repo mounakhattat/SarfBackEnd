@@ -126,5 +126,7 @@ private Date bannedPeriode;
 @JsonIgnore
     @OneToMany( cascade = CascadeType.ALL ,mappedBy = "user")
     private List<Enchere> encheres;
-
+    @JsonIgnore
+    @OneToMany( cascade = CascadeType.ALL ,mappedBy = "user")
+    private List<Reservation> reservations;
 }

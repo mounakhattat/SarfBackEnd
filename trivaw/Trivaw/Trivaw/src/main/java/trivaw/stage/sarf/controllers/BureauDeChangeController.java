@@ -56,4 +56,16 @@ public class BureauDeChangeController {
         return bureauDeChangeServices.filterBureauxDeChangeByLocalisation(localisation);
     }
 
+
+
+
+
+
+
+
+    @GetMapping("/{idUser}/reservations")
+    public ResponseEntity<List<Reservation>> getReservationsByBureauDeChange(@PathVariable("idUser") Integer idUser) {
+        List<Reservation> reservations = bureauDeChangeServices.getReservationsByUser( idUser);
+        return ResponseEntity.ok(reservations);
+    }
 }
