@@ -47,6 +47,11 @@ public class ReservationController {
         return reservationService.getReservationById(idReservation);
     }
 
+
+    @GetMapping("/getReservationByUser/{idUser}")
+    public List<Reservation>  getReservationByUser(@PathVariable("idUser") Integer idUser) {
+        return reservationService.getReservationByUser(idUser);
+    }
     //validation Reservation by bureau de change
     @PutMapping("/updateReservation/{idReservation}")
     public Reservation updateReservation(@PathVariable("idReservation") Integer idReservation, @RequestBody Reservation a) throws MessagingException,  IOException {

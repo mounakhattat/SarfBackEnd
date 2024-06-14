@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface IStockService {
     public List<Stock> getAllStock();
+    Stock findByDevise(String devise);
     Stock getStockById(Integer idStock);
     Stock createStock(Stock a);
     Stock updateStock(Integer idStock, Stock a);
@@ -14,5 +15,5 @@ public interface IStockService {
     List<Stock> getStockByUser(Integer idUser);
     Stock createStockByUser(Integer idUser,Stock a);
     List<Stock> updateStockByUser(Integer idUser, Stock a, Integer idStock);
-    List<String> getDistinctDevisesByUserId(Integer idUser) ;
+    List<Stock> getDistinctDevisesByUserId(Integer idUser) ;
 }

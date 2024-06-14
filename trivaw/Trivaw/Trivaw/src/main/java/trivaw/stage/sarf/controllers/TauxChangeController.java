@@ -63,7 +63,7 @@ public class TauxChangeController {
 
     @GetMapping("/TriVenteDevise/{deviseSource}")
     public List<Object[]> getTauxDeChangeSortedByTauxVenteAscForDevise(@PathVariable String deviseSource) {
-        return iTauxChangeService.findTauxDeChangeAndBureauNomSortedByTauxVenteAscForDevise(deviseSource);
+        return iTauxChangeService.getTauxDeChangeSortedByTauxVenteDESCForDevise(deviseSource);
     }
 
 }

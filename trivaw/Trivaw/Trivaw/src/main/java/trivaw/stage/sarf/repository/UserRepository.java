@@ -7,6 +7,7 @@ import trivaw.stage.sarf.Entities.ERole;
 import trivaw.stage.sarf.Entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import trivaw.stage.sarf.Request.UserStatistics;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -28,4 +29,8 @@ User findByCode(String code);
    void changeUserPassword(@Param("password") String password, @Param("idUser") Integer idUser);
     @Query("SELECT u FROM User u WHERE u.roles = 2")
     List<User> findVisitors();
+
+
+
+
 }

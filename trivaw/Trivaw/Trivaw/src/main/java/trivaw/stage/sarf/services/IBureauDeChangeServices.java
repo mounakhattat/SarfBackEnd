@@ -21,4 +21,6 @@ public interface IBureauDeChangeServices {
     ResponseEntity<?> registerUserAndAssignBureau(SignUp signUpRequest) throws MessagingException, UnsupportedEncodingException;
     List<BureauDeChange> filterBureauxDeChangeByLocalisation(String localisation);
     List<Reservation> getReservationsByUser(Integer idUser);
+    String getLocationByIdBureau(Integer idBureauDeChange);
+    List<String> getAllLocation();
 }

@@ -113,13 +113,13 @@ WebSocketEndpoint webSocketEndpoint;
     if (userRepository.existsByUsername(signUpRequest.getUsername())) {
         return ResponseEntity
                 .badRequest()
-                .body(new MessageResponse("Error: Username is already taken!"));
+                .body(new MessageResponse("Erreur: Nom Utilisateur déjà existe!"));
     }
 
     if (userRepository.existsByEmail(signUpRequest.getEmail())) {
         return ResponseEntity
                 .badRequest()
-                .body(new MessageResponse("Error: Email is already in use!"));
+                .body(new MessageResponse("Erreur: Email déjà existe!"));
     }
 
     // Create new user's account
@@ -157,15 +157,15 @@ WebSocketEndpoint webSocketEndpoint;
     String toAddress = user.getEmail();
     System.out.println(toAddress);
     String content = "<p>Hello " + signUpRequest.getUsername() + ",</p>"
-            + "<p>Welcome to SARF.tn ! Your account has been successfully created.</p>"
+            + "<p>Bienvenue chez SARF.tn ! Votre Compte a été crée avec succés.</p>"
             + "<br>"
-            + "<p>Here's your credantials "
-            + "<p>Login : " +signUpRequest.getUsername() + "</p>"
-            + "<p>Password : " +signUpRequest.getPassword() + "</p>"
+            + "<p>Voilà les coordonnées de votre compte:  "
+            + "<p>Nom d'Utilisateur : " +signUpRequest.getUsername() + "</p>"
+            + "<p>Mot De Passe : " +signUpRequest.getPassword() + "</p>"
             + "<br>"
-            + "<p><a href=\"[[URL]]\" >Click to connect: </a></p>"
+            + "<p><a href=\"[[URL]]\" >Cliquer pour connecter: </a></p>"
 
-            + "<p>Thank you,</p>";
+            + "<p>Merci pour votre confiance,</p>";
     String verifyURL = "http://localhost:4200/page-login" ;
     content = content.replace("[[URL]]", verifyURL);
     MimeMessage message = emailSender.createMimeMessage();
@@ -173,7 +173,7 @@ WebSocketEndpoint webSocketEndpoint;
 
     helper.setFrom(FromAddress, SenderName);
     helper.setTo(toAddress);
-    helper.setSubject("Account Registration Confirmation");
+    helper.setSubject("Confirmation d'inscription");
     helper.setText(content, true);
 
     emailSender.send(message);
@@ -185,6 +185,14 @@ WebSocketEndpoint webSocketEndpoint;
         return bureauDeChangeRepository.findByLocalisation(localisation);
     }
 
+    @Override
+    public List<String> getAllLocation() {
+        return bureauDeChangeRepository.getAllLocation();
+    }
+    @Override
+    public String getLocationByIdBureau(Integer idBureauDeChange) {
+        return bureauDeChangeRepository.getLocationByIdBureau(idBureauDeChange);
+    }
     public void sendMessageToExchange(Reservation reservation, Integer idBureauDeChange , Integer idUser) throws IOException {
         BureauDeChange bureauDeChange = getBureauDeChangeById(idBureauDeChange);
         Integer userId = bureauDeChange.getUser().getIdUser();

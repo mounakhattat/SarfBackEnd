@@ -11,5 +11,6 @@ public interface IReservationService {
     List<Reservation> getAllReservation();
     Reservation getReservationById(Integer idReservation);
     Reservation saveReservation(Reservation a);
+    List<Reservation> getReservationByUser(Integer idUser);
     Reservation updateReservation(Integer idReservation, Reservation a) throws MessagingException, IOException;
 }

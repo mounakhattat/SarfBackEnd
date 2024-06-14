@@ -59,13 +59,12 @@ public class ResetPasswordTokenService implements IResetPasswordToken {
         passwordResetToken.setExpireDate(Instant.now().plusSeconds(passTokenDurationMs));
         passwordResetToken.setToken(UUID.randomUUID().toString());
         String toAddress;
-        String content = "<p>Hello,</p>"
-                + "<p>You have requested to reset your password.</p>"
-                + "<p>Click the link below to change your password:</p>"
-                + "<p><a href=\"[[URL]]\" >Change my password</a></p>"
+        String content = "<p>Bonjour,</p>"
+                + "<p>Vous avez demandé de modifier votre mot de Passe.</p>"
+                + "<p>Cliquer sur ce lien pour changer votre mot de passe:</p>"
+                + "<p><a href=\"[[URL]]\" >Changer mon mot de passe</a></p>"
                 + "<br>"
-                + "<p>Ignore this email if you do remember your password, "
-                + "or you have not made the request.</p>";
+                + "<p>Ignorer ce email si vous vous souvenez de l'ancienne, ";
 
         if (user != null) {
             passwordResetToken.setUserPass(user);
@@ -76,7 +75,7 @@ public class ResetPasswordTokenService implements IResetPasswordToken {
 
 
         } else
-            throw new UserNotFoundException("Could not find any user with the email" + email);
+            throw new UserNotFoundException("Aucun utilisateur trouvé avec cette adresse email" + email);
 
         resetPasswordRepository.save(passwordResetToken);
         MimeMessage message = emailSender.createMimeMessage();
@@ -84,7 +83,7 @@ public class ResetPasswordTokenService implements IResetPasswordToken {
 System.out.println(message);
         helper.setFrom(FromAddress, SenderName);
         helper.setTo(toAddress);
-        helper.setSubject("Password Reset");
+        helper.setSubject("Modifier Mot De Passe");
         helper.setText(content, true);
 
         emailSender.send(message);

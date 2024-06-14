@@ -13,6 +13,6 @@ public interface StockRepository extends JpaRepository<Stock,Integer> {
     @Query("SELECT b FROM Stock b WHERE b.bureauDeChange.user.idUser = :idUser")
     List<Stock> getStockByUser(@Param("idUser") Integer idUser);
    Stock  findByDevise(String Devise);
-    @Query("SELECT DISTINCT s.devise FROM Stock s WHERE s.bureauDeChange.user.idUser = :idUser")
-    List<String> findDistinctDevisesByUserId(Integer idUser);
+    @Query("SELECT  s FROM Stock s WHERE s.bureauDeChange.user.idUser = :idUser")
+    List<Stock> findDistinctDevisesByUserId(Integer idUser);
 }

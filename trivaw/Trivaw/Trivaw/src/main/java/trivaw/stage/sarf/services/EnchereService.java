@@ -1,6 +1,7 @@
 package trivaw.stage.sarf.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import trivaw.stage.sarf.Entities.*;
@@ -77,7 +78,7 @@ public class EnchereService  implements  IEnchereService {
         enchereRepository.save(enchere);
     }
 
- @Scheduled(fixedRate = 60000) // Vérifie toutes les minutes
+ //@Scheduled(fixedRate = 60000) // Vérifie toutes les minutes
     public void cloturerEncheresExpirees() {
         List<Enchere> encheresExpirees = detecterEncheresExpirees();
         if (!encheresExpirees.isEmpty()) {
@@ -97,11 +98,13 @@ public class EnchereService  implements  IEnchereService {
 
     }
 
-
+    public List<Object[]> getTopUsers() {
+        return enchereRepository.findTopUsers();
+    }
 
 
 @Override
-    public Enchere participerEnchere(Integer idEnchere, Double tauxPropose, Integer idUser) {
+    public ResponseEntity<Enchere> participerEnchere(Integer idEnchere, Double tauxPropose, Integer idUser) {
         // Rechercher l'enchère par son ID
         Optional<Enchere> optionalEnchere = enchereRepository.findById(idEnchere);
         System.out.println(optionalEnchere);
@@ -128,14 +131,17 @@ public class EnchereService  implements  IEnchereService {
                             Stock stock = stockRepository.findByDevise(devise);
                             if (stock != null) {
                                 BigDecimal montantStock = BigDecimal.valueOf(stock.getQuantite()); // Convertir en BigDecimal
-                                if ("Vente".equalsIgnoreCase(enchere.getType())) {
+                                if ("Vente".equalsIgnoreCase(enchere.getType())  ) {
                                     // Addition pour le type vente
                                     BigDecimal nouveauMontant = montantStock.add(montant);
                                     stock.setQuantite(nouveauMontant.doubleValue()); // Convertir de nouveau en double si nécessaire
+
                                 }
+
                             }
+                            enchereRepository.save(enchere);
                             // Sauvegarder les modifications de l'enchère
-                            return enchereRepository.save(enchere);
+                            return ResponseEntity.ok().body(enchere);
                         } else {
                             // Le taux proposé n'est pas le plus bas, ne pas mettre à jour
                             throw new RuntimeException("Le taux proposé doit être le plus interessant.");

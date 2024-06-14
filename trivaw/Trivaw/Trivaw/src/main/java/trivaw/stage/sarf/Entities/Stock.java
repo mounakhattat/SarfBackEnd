@@ -1,5 +1,6 @@
 package trivaw.stage.sarf.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -17,7 +18,7 @@ public class Stock implements Serializable {
     private Integer idStock;
     private String devise;
     private Double quantite;
-
+    @JsonIgnore
 @ManyToOne
     private BureauDeChange bureauDeChange;
 }

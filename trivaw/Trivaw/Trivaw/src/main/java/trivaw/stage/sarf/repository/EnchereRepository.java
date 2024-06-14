@@ -14,6 +14,20 @@ public interface EnchereRepository extends JpaRepository<Enchere,Integer> {
     List<Enchere> findEncheresExpirees(LocalDateTime now);
 
     List<Enchere> findByUser_IdUser(Integer idUser);
+    @Query("SELECT e.winner, e.devise, e.type, e.montant as montantMax, " +
+            "(SELECT COUNT(e2.idEnchere) FROM Enchere e2 WHERE e2.winner = e.winner) as nbVictoires " +
+            "FROM Enchere e " +
+            "WHERE e.montant = (SELECT MAX(e2.montant) FROM Enchere e2 WHERE e2.winner = e.winner) " +
+            "GROUP BY e.winner, e.devise, e.type, e.montant "
+            )
+    List<Object[]> findTopUsers();
+
+
+
+
+
+
+
 
 
 }

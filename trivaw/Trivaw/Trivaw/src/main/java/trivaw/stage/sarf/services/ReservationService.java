@@ -27,6 +27,8 @@ public class ReservationService implements  IReservationService{
     @Autowired
     private JavaMailSender emailSender;
     @Autowired
+    private  StockService stockService;
+    @Autowired
     ReservationRepository reservationRepository;
     @Autowired
     UserRepository userRepository;
@@ -48,76 +50,139 @@ public class ReservationService implements  IReservationService{
     public Reservation getReservationById(Integer idReservation) {
         return reservationRepository.findById(idReservation).orElse(null);
     }
-   //valider Reservation par bureau de change
+
     @Override
-    public Reservation updateReservation(Integer idReservation, Reservation a ) throws MessagingException, IOException {
-        Reservation existingReservation = reservationRepository.findById(idReservation).orElse(null);
-
-        if (existingReservation != null) {
-            existingReservation.setStatus(a.getStatus());
-
-            reservationRepository.save(existingReservation);
-            System.out.println(existingReservation.getUser().getIdUser()+"kkrkrkkrk");
-            Integer idUser = existingReservation.getUser().getIdUser();
-            System.out.println(idUser+"pffffffffff");
-            sendMessageToUser(a, idUser);
-            String subject;
-        String toAddress = existingReservation.getUser().getEmail();
-        System.out.println(toAddress+"aaaaaaaaaaaaaaaaaaaaaaaaaa");
-            String content ;
-            if ("Confirmer".equalsIgnoreCase(a.getStatus())) {
-                subject = "Validation de la Réservation";
-                content = "<p>Bonjour,</p>"
-                        + "<p>Par le présent mail, nous avons l'honneur de vous annoncer la validation de votre demande de réservation.</p>";
-                // Soustraction du montant de devises depuis la table stock
-                BigDecimal montant = BigDecimal.valueOf(existingReservation.getMontant()); // Convertir en BigDecimal
-                String devise = existingReservation.getDevise(); // Supposons que cette méthode existe
-
-                Stock stock = stockRepository.findByDevise(devise);
-                if (stock != null) {
-                    BigDecimal montantStock = BigDecimal.valueOf(stock.getQuantite()); // Convertir en BigDecimal
-                    if ("achat".equalsIgnoreCase(existingReservation.getType())) {
-                        // Soustraction pour le type achat
-                        BigDecimal nouveauMontant = montantStock.subtract(montant);
-                        stock.setQuantite(nouveauMontant.doubleValue()); // Convertir de nouveau en double si nécessaire
-                    } else if ("vente".equalsIgnoreCase(existingReservation.getType())) {
-                        // Addition pour le type vente
-                        BigDecimal nouveauMontant = montantStock.add(montant);
-                        stock.setQuantite(nouveauMontant.doubleValue()); // Convertir de nouveau en double si nécessaire
-                    }
-
-                    stockRepository.save(stock);
-                } else {
-                    // Gérer le cas où la devise n'est pas trouvée dans le stock
-                    throw new IllegalArgumentException("Devise non trouvée dans le stock");
-                }
-            } else {
-                subject = "Mise à jour de la Réservation";
-                content = "<p>Bonjour,</p>"
-                        + "<p>Votre demande de réservation a été mise à jour. Le nouveau statut est : " + a.getStatus() + ".</p>";
-            }
-            MimeMessage message = emailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message);
-            System.out.println(message);
-            helper.setFrom(FromAddress, SenderName);
-            helper.setTo(toAddress);
-            helper.setSubject(subject);
-
-            helper.setText(content, true);
-
-            emailSender.send(message);
-
-
-
-
-
-            return    reservationRepository.save(existingReservation);
-
-        } else {
-            return null;
-        }
-
+    public List<Reservation> getReservationByUser(Integer idUser) {
+        return reservationRepository.getReservationByUser(idUser);
     }
+
+
+
+   //valider Reservation par bureau de change
+   @Override
+   public Reservation updateReservation(Integer idReservation, Reservation a) throws MessagingException, IOException {
+
+       Reservation existingReservation = reservationRepository.findById(idReservation).orElse(null);
+       System.out.println(existingReservation +"hjhuhkl");
+       boolean deviseTrouvee = false;
+
+       if (existingReservation != null) {
+           String devise = existingReservation.getDevise();
+           BigDecimal montant = BigDecimal.valueOf(existingReservation.getMontant());
+           System.out.println(devise +"ssssssssssss");
+           System.out.println(montant +"dezdedzdez");
+
+        BigDecimal quantite =BigDecimal.valueOf(0.0);
+            BureauDeChange bureauDeChange = bureauDeChangeRepository.findById(existingReservation.getBureauDeChangeId()).get();
+
+            User user= userRepository.findById(bureauDeChange.getUser().getIdUser()).get();
+           System.out.println( user.getIdUser() +"oooooooooooooooooooooooo");
+
+           List<Stock> devises=   stockService.getDistinctDevisesByUserId(user.getIdUser());
+           Stock stock = new Stock();
+
+           for (Stock devisee : devises) {
+               if (devisee.getDevise().equals(devise)) {
+              stock=devisee;
+                   // Si la devise existe, récupérer le stock pour cette devise
+                   deviseTrouvee = true;
+
+                    quantite =  BigDecimal.valueOf(devisee.getQuantite());
+                   System.out.println(quantite +"hahhahhahhahha");
+
+
+               }
+           }
+
+
+           if (deviseTrouvee = true) {
+Boolean comparaison = montant.compareTo(quantite) <= 0;
+if(!comparaison) {
+    existingReservation.setStatus("Stock Epuisé");
+    reservationRepository.save(existingReservation);
+
+    // Envoi de l'email pour stock épuisé
+    String subject = "Stock Épuisé";
+    String toAddress = existingReservation.getUser().getEmail();
+    String content = "<p>Bonjour,</p>"
+            + "<p>Nous regrettons de vous informer que le stock pour la devise " + devise + " est actuellement épuisé.</p>"
+            + "<p>Merci pour votre compréhension.</p>";
+    sendEmail(toAddress, subject, content);
+
+    throw new IllegalArgumentException("Le montant de la réservation est supérieur au stock disponible pour cette devise.");
+
+}
+               // Vérifier si le montant de la réservation est inférieur ou égal au stock
+              else  {
+                   System.out.println(comparaison +"jijijiji");
+
+                   // Mettre à jour le statut de la réservation seulement s'il est vide
+                   if (existingReservation.getStatus() == null  || existingReservation.getStatus().isEmpty() || "Stock Epuisé".equalsIgnoreCase(existingReservation.getStatus())) {
+                       existingReservation.setStatus(a.getStatus());
+
+                       // Mettre à jour le stock
+                       if ("Confirmer".equalsIgnoreCase(a.getStatus())) {
+                           if ("Achat".equalsIgnoreCase(existingReservation.getType())) {
+                               // Soustraction pour le type achat
+                               BigDecimal nouveauMontant = quantite.subtract(montant);
+                               stock.setQuantite(nouveauMontant.doubleValue());
+                           } else if ("Vente".equalsIgnoreCase(existingReservation.getType())) {
+                               // Addition pour le type vente
+                               BigDecimal nouveauMontant = quantite.add(montant);
+                               stock.setQuantite(nouveauMontant.doubleValue());
+                           }
+                           stockRepository.save(stock);
+                       }
+                       else   {
+                           reservationRepository.save(existingReservation);
+
+                       }
+
+                       reservationRepository.save(existingReservation);
+                       sendMessageToUser(a, existingReservation.getUser().getIdUser());
+
+                       // Envoi du mail de confirmation/refus
+                       String subject;
+                       String toAddress = existingReservation.getUser().getEmail();
+                       String content;
+                       if ("Confirmer".equalsIgnoreCase(a.getStatus())) {
+                           subject = "Validation de la Réservation";
+                           content = "<p>Bonjour,</p>"
+                                   + "<p>Par le présent mail, nous avons l'honneur de vous annoncer la validation de votre demande de réservation.</p>";
+                       } else   {
+                           subject = "Mise à jour de la Réservation";
+                           content = "<p>Bonjour,</p>"
+                                   + "<p>Votre demande de réservation a été mise à jour. Le nouveau statut est : " + a.getStatus() + ".</p>";
+                       }
+                       sendEmail(toAddress, subject, content);
+                   } else {
+                       // Le statut de la réservation n'est pas vide
+                       throw new IllegalArgumentException("Le statut de la réservation n'est pas vide, il ne peut pas être mis à jour.");
+                   }
+               }
+           } else {
+               // La devise n'est pas trouvée dans le stock
+               throw new IllegalArgumentException("Devise non trouvée dans le stock");
+           }
+
+           return reservationRepository.save(existingReservation);
+       } else {
+                        throw new IllegalArgumentException("ooooooooooooooooooojjjjjjjj");
+
+       }
+   }
+
+    private void sendEmail(String toAddress, String subject, String content) throws MessagingException, UnsupportedEncodingException {
+        MimeMessage message = emailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+        helper.setFrom(FromAddress, SenderName);
+        helper.setTo(toAddress);
+        helper.setSubject(subject);
+        helper.setText(content, true);
+        emailSender.send(message);
+    }
+
+
 
     @Override
     public Reservation saveReservation(Reservation reservation) {

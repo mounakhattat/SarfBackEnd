@@ -92,7 +92,7 @@ public class PDFGenerator {
                 table.addCell(Phone);
 
                 PdfPCell Housing = new PdfPCell(new Phrase
-                        (String.valueOf(p.getHousing())));
+                        (String.valueOf(p.getPays())));
                 Housing.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 Housing.setHorizontalAlignment(Element.ALIGN_RIGHT);
                 Housing.setPaddingRight(8);

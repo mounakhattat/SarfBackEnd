@@ -101,11 +101,17 @@ public class UserService implements IUserService {
     public User updateUser(Integer idUser, User user) {
         User existingUser = userRepository.findById(idUser).orElse(null);
         if (existingUser != null) {
+            existingUser.setUsername(user.getUsername());
+
             existingUser.setLastName(user.getLastName());
             existingUser.setFirstName(user.getFirstName());
             existingUser.setAge(user.getAge());
-            existingUser.setHousing(user.getHousing());
+            existingUser.setVille(user.getVille());
             existingUser.setNumPhone(user.getNumPhone());
+            existingUser.setEmail(user.getEmail());
+            existingUser.setSexe(user.getSexe());
+            existingUser.setPays(user.getPays());
+
 
             return userRepository.save(existingUser);
         } else {

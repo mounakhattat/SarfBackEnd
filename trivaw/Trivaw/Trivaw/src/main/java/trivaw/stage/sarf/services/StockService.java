@@ -28,7 +28,11 @@ public class StockService implements IStockService {
     public Stock getStockById(Integer idAcc) {
         return stockRepository.findById(idAcc).orElse(null);
     }
-
+    @Override
+    public Stock findByDevise(String devise) {
+        return stockRepository.findByDevise(devise)
+                ;
+    }
     @Override
     public Stock createStock(Stock a) {
         return stockRepository.save(a);
@@ -83,7 +87,7 @@ public class StockService implements IStockService {
     }
 
 @Override
-    public List<String> getDistinctDevisesByUserId(Integer idUser) {
+    public List<Stock> getDistinctDevisesByUserId(Integer idUser) {
         return stockRepository.findDistinctDevisesByUserId(idUser);
     }
 }

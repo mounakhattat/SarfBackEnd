@@ -85,7 +85,7 @@ public class UserController {
     //http://localhost:8080/user/create-user
     @PostMapping("/createUser")
     public ResponseEntity<?> createUser(@RequestBody User user, HttpSession session) throws MessagingException {
-        String msg = "Bonjour, Loantree vous remercie pour votre fédilité..  ..";
+        String msg = "Bonjour, SARF.TN vous remercie pour votre fédilité..  ..";
         twilioService.sendSms(To, From, msg);
         String confirmationCode = UUID.randomUUID().toString();
 
@@ -95,7 +95,7 @@ public class UserController {
                 "Pour la confirmation de votre compte c'est votre code .\n\n";
 
         String text = "\n Cordialement,\n" +
-                "L'équipe de LOANTREE, \n";
+                "L'équipe de SARF.TN, \n";
         String reset = confirmationCode;
         emailService.sendEmail(to, subject, body + reset + text);
         System.out.println("Session: " + session);
@@ -113,7 +113,7 @@ public class UserController {
             User user = (User) session.getAttribute("user");
             user.setActived(true);
             userRepository.save(user);
-            return "Votre est activé avec succès !";
+            return "Votre Compte est activé avec succès !";
         } else {
             model.addAttribute("error", "Le code de confirmation est invalide !");
             return "Erreur,Merci de verifier votre code svp";
@@ -207,7 +207,7 @@ public class UserController {
         excelExporter.export(response);
     }
 
-    private static final String QR_CODE_IMAGE_PATH = "C:\\Users\\Mouna\\Desktop\\Finaaal\\pidevmouna\\pidevmouna\\pidevmouna\\src\\main\\resources\\qrCode\\.png";
+    private static final String QR_CODE_IMAGE_PATH = "C:\\Users\\pc\\OneDrive - ESPRIT\\Bureau\\Sarf\\Stage_Trivaw\\trivaw\\Trivaw\\Trivaw\\src\\main\\resources\\qrCode\\.png";
 
     @GetMapping("/viewqr/{id}")
     @ResponseBody
@@ -235,9 +235,17 @@ public class UserController {
     */
 
     @PutMapping("/banUser/{idUser}/{nbr}")
-    @ResponseBody
     public User banUser(@PathVariable("idUser") Integer idUser, @PathVariable("nbr") int nbr) {
         return userService.banUser(idUser, nbr);
+    }
+
+
+    @PostMapping("/upload/{idUser}")
+    public ResponseEntity<?> uploadImage(@PathVariable("idUser") Integer idUser ,@RequestBody String image ) {
+        User user = getUserById(idUser);
+userRepository.save(user);
+         System.out.println("Données de l'image reçues : " + image);
+        return ResponseEntity.ok("Image téléchargée avec succès !");
     }
 }
 

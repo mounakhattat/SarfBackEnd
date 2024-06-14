@@ -1,5 +1,6 @@
 package trivaw.stage.sarf.services;
 
+import org.springframework.http.ResponseEntity;
 import trivaw.stage.sarf.Entities.Enchere;
 import trivaw.stage.sarf.Entities.User;
 
@@ -12,7 +13,7 @@ public interface IEnchereService {
   //  Enchere creerEnchere(Enchere enchere);
   void deleteEnchere(Integer idEnchere);
     Enchere creerEnchere(Enchere enchere, Integer idUser);
-    Enchere participerEnchere(Integer idEnchere, Double tauxPropose,  Integer idUser) throws MessagingException, IOException;
+  ResponseEntity<Enchere> participerEnchere(Integer idEnchere, Double tauxPropose, Integer idUser) throws MessagingException, IOException;
     List<Enchere> findEnchereByIdUser(Integer idUser);
     Enchere getEnchereById(Integer idEnchere);
 }

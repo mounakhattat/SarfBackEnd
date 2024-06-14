@@ -15,5 +15,9 @@ public interface BureauDeChangeRepository extends JpaRepository<BureauDeChange,I
     BureauDeChange getBureauDeChangeByUser(@Param("idUser") Integer idUser);
     List<BureauDeChange> findByLocalisation(String localisation);
 
+    @Query("SELECT b.localisation FROM BureauDeChange b WHERE b.idBureauDeChange = :idBureauDeChange")
+    String getLocationByIdBureau(@Param("idBureauDeChange") Integer idBureauDeChange);
+    @Query("SELECT b.country FROM BureauDeChange b")
+    List<String> getAllLocation();
 
 }

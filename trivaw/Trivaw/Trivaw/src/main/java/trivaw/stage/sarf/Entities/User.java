@@ -27,8 +27,11 @@ public class User implements Serializable {
     private ERole roles ;
     private String username;
     private Integer age;
+    private String pays;
 
-    private String housing;
+    private String ville;
+
+    private String sexe;
 
     private String email;
     private boolean actived;
@@ -129,4 +132,12 @@ private Date bannedPeriode;
     @JsonIgnore
     @OneToMany( cascade = CascadeType.ALL ,mappedBy = "user")
     private List<Reservation> reservations;
+    @JsonIgnore
+    @OneToMany(mappedBy = "touriste", cascade = CascadeType.ALL)
+    private Set<Evaluation> evaluationsAsTouriste;
+    @JsonIgnore
+    @OneToMany(mappedBy = "bureauDeChange", cascade = CascadeType.ALL)
+    private Set<Evaluation> evaluationsAsBureauDeChange;
+
+
 }

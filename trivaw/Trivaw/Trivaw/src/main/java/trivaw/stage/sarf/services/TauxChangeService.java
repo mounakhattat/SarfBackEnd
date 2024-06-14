@@ -107,8 +107,8 @@ public class TauxChangeService implements ITauxChangeService{
         return tauxChangeRepository.findTauxDeChangeAndBureauNomSortedByTauxAchatAscForDevise(deviseSource);
     }
 
-    public List<Object[]> findTauxDeChangeAndBureauNomSortedByTauxVenteAscForDevise(String deviseSource) {
-        return tauxChangeRepository.findTauxDeChangeAndBureauNomSortedByTauxVenteAscForDevise(deviseSource);
+    public List<Object[]> getTauxDeChangeSortedByTauxVenteDESCForDevise(String deviseSource) {
+        return tauxChangeRepository.getTauxDeChangeSortedByTauxVenteDESCForDevise(deviseSource);
     }
 
 

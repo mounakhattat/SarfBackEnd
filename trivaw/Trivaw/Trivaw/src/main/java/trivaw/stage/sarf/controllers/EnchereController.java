@@ -67,9 +67,19 @@ public class EnchereController {
     @PostMapping("/participer/{idEnchere}/{tauxPropose}/{idUser}")
     public ResponseEntity<?> participerEnchere(@PathVariable("idEnchere") Integer idEnchere, @PathVariable("tauxPropose") Double tauxPropose, @PathVariable("idUser") Integer idUser ) {
         try {
-            Enchere enchere = enchereService.participerEnchere(idEnchere, tauxPropose, idUser);
+            ResponseEntity<Enchere> enchere = enchereService.participerEnchere(idEnchere, tauxPropose, idUser);
 
             return ResponseEntity.ok().body(enchere);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/topUsers")
+    public ResponseEntity<?> getTopUsers() {
+        try {
+            List<Object[]> topUsers = enchereService.getTopUsers();
+            return ResponseEntity.ok().body(topUsers);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

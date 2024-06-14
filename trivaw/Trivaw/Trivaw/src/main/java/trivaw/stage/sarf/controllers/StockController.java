@@ -25,6 +25,10 @@ public class StockController {
     public Stock getStockById(@PathVariable("idStock") Integer idStock) {
         return stockService.getStockById(idStock);
     }
+    @GetMapping("/getStockByDevise/{devise}")
+    public Stock getStockByDevise(@PathVariable("devise") String devise) {
+        return stockService.findByDevise(devise);
+    }
 
     @GetMapping("/getStockByUser/{idUser}")
     public List<Stock> getStockByUser(@PathVariable("idUser") Integer idUser){
@@ -35,7 +39,7 @@ public class StockController {
         return stockService.createStock(a);
     }
     @GetMapping("/getStockDevisesByUser/{idUser}")
-    public List<String> getStockDevisesByUser(@PathVariable("idUser") Integer idUser) {
+    public List<Stock> getStockDevisesByUser(@PathVariable("idUser") Integer idUser) {
         return stockService.getDistinctDevisesByUserId(idUser);
     }
 
