@@ -190,8 +190,19 @@ WebSocketEndpoint webSocketEndpoint;
         return bureauDeChangeRepository.getAllLocation();
     }
     @Override
+    public List<String> getAllNames() {
+        return bureauDeChangeRepository.getAllNames();
+    }
+    @Override
     public String getLocationByIdBureau(Integer idBureauDeChange) {
         return bureauDeChangeRepository.getLocationByIdBureau(idBureauDeChange);
+    }
+
+
+
+    @Override
+    public  Integer getIdBureauWithNames(String nom) {
+        return bureauDeChangeRepository.getIdBureauWithNames(nom);
     }
     public void sendMessageToExchange(Reservation reservation, Integer idBureauDeChange , Integer idUser) throws IOException {
         BureauDeChange bureauDeChange = getBureauDeChangeById(idBureauDeChange);
@@ -232,13 +243,50 @@ WebSocketEndpoint webSocketEndpoint;
         return null;
     }
 
+    public void sendMessageToExchangeForReclamation(Reclamation reclamation, Integer idBureauDeChange , Integer idUser) throws IOException {
+        User user = userRepository.findById(idBureauDeChange).get();
+
+
+        BureauDeChange bureauDeChange = getBureauDeChangeByUser(user.getIdUser());
+
+        Integer userId = bureauDeChange.getUser().getIdUser();
+        String reclamationMessages = messageForReclamation(reclamation,idUser); // Convert Reservation to String
+
+        if (userId != null) {
+            CopyOnWriteArrayList<WebSocketSession> sessions = WebSocketEndpoint.getSessions();
+            // Envoyer le message WebSocket à toutes les sessions
+            for (WebSocketSession session : sessions) {
+                System.out.println(session + "oooooooooooooooooooooooooojjjjjj");
+
+                URI uri = session.getUri();
+                Integer userIdFromUri = extractUserIdFromUri(uri);
+
+                if (session != null && session.isOpen() && userIdFromUri != null && userIdFromUri.equals(userId)) {
+                    session.sendMessage(new TextMessage(reclamationMessages));
+                }
+            }
+        } else {
+            // Gérer le cas où le bureau de change n'est pas trouvé
+        }
+    }
+
     private String convertReservationToString(Reservation reservation , Integer idUser) {
         User user = userService.getUserById(idUser);
         String userId = user.getUsername();
-        String reservationString = "Vous avez une nouvelle  reservation d'après " + userId ;
+
+        String reservationString = "Vous avez une nouvelle reservation  de iji " +   reservation.getMontant() +" d après " + userId ;
 
 
         return reservationString;
+    }
+
+    private String messageForReclamation(Reclamation reclamation , Integer idUser) {
+        User user = userService.getUserById(idUser);
+        String userId = user.getUsername();
+        String reclamationMessages = "Vous avez une nouvelle reclamation d après " + userId ;
+
+
+        return reclamationMessages;
     }
 
     // Méthode pour récupérer les réservations associées à un bureau de change spécifique

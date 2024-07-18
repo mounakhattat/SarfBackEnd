@@ -233,14 +233,7 @@ if(!comparaison) {
 
 
 
-    private String convertReservationToString(Reservation reservation , Integer idUser) {
-        User user = userService.getUserById(idUser);
-        String userId = user.getUsername();
-        String reservationString = "Vous avez une nouvelle  reservation d'après " + userId  ;
 
-
-        return reservationString;
-    }
     private String convertNotifToString(Reservation reservation , Integer idUser) {
         User user = userService.getUserById(idUser);
         BureauDeChange bureauDeChange = bureauDeChangeRepository.findById(reservation.getBureauDeChangeId()).get();

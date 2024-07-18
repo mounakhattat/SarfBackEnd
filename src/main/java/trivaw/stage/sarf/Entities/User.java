@@ -116,9 +116,6 @@ private Date bannedPeriode;
         this.code = code;
     }
 
-    public void setNewPassword(String newPassword) {
-        this.newPassword = newPassword;
-    }
 
 
     public void setRoles(ERole role) {
@@ -126,7 +123,7 @@ private Date bannedPeriode;
     }
     @OneToOne(mappedBy = "user")
     private BureauDeChange bureauDeChange;
-@JsonIgnore
+    @JsonIgnore
     @OneToMany( cascade = CascadeType.ALL ,mappedBy = "user")
     private List<Enchere> encheres;
     @JsonIgnore
@@ -138,6 +135,12 @@ private Date bannedPeriode;
     @JsonIgnore
     @OneToMany(mappedBy = "bureauDeChange", cascade = CascadeType.ALL)
     private Set<Evaluation> evaluationsAsBureauDeChange;
+    @JsonIgnore
+    @OneToMany(mappedBy = "touriste", cascade = CascadeType.ALL)
+    private Set<Reclamation> reclamationsAsTouriste;
+    @JsonIgnore
+    @OneToMany(mappedBy = "bureauDeChange", cascade = CascadeType.ALL)
+    private Set<Reclamation> reclamationsAsBureauDeChange;
 
 
 }

@@ -23,4 +23,6 @@ public interface IBureauDeChangeServices {
     List<Reservation> getReservationsByUser(Integer idUser);
     String getLocationByIdBureau(Integer idBureauDeChange);
     List<String> getAllLocation();
+    List<String> getAllNames();
+    Integer getIdBureauWithNames(String nom);
 }

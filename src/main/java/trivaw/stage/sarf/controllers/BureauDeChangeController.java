@@ -51,9 +51,18 @@ public class BureauDeChangeController {
     public String getLocationByIdBureau(@PathVariable("idBureauDeChange") Integer idBureauDeChange){
         return bureauDeChangeServices.getLocationByIdBureau(idBureauDeChange);
     }
+
+    @GetMapping("/getIdBureauWithNames/{nom}")
+    public Integer getIdBureauWithNames(@PathVariable("nom") String nom){
+        return bureauDeChangeServices.getIdBureauWithNames(nom);
+    }
     @GetMapping("/getAllLocation")
     public List<String> getAllLocation(){
         return bureauDeChangeServices.getAllLocation();
+    }
+    @GetMapping("/getAllNames")
+    public List<String> getAllNames(){
+        return bureauDeChangeServices.getAllNames();
     }
     @PutMapping("/updatebyUser/{idUser}")
     public void updateBureauDeChangeByUser(@PathVariable("idUser") Integer idUser, @RequestBody BureauDeChange a) {
