@@ -15,7 +15,6 @@ public class AccountController {
     private IAccountService accountService;
 
 
-    //http://localhost:8083/Account/retrieve-Account
     @GetMapping("/retrieve-Account")
     public List<Account> getAllUsers() {
         return accountService.getAllAccount();
