@@ -10,7 +10,6 @@ import java.util.List;
 
 public interface IEnchereService {
     List<Enchere> getAllEnchere();
-  //  Enchere creerEnchere(Enchere enchere);
   void deleteEnchere(Integer idEnchere);
     Enchere creerEnchere(Enchere enchere, Integer idUser);
   ResponseEntity<Enchere> participerEnchere(Integer idEnchere, Double tauxPropose, Integer idUser) throws MessagingException, IOException;
