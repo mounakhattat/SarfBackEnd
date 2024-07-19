@@ -16,12 +16,7 @@
 	<properties>
 		<java.version>17</java.version>
 	</properties>
-	<distributionManagement>
-		<repository>
-			<id>maven-releases</id>
-			<url>http://172.17.0.1:8081/repository/maven-releases/</url>
-		</repository>
-	</distributionManagement>
+	
 
 	<dependencies>
 		<dependency>
