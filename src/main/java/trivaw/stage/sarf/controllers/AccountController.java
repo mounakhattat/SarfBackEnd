@@ -20,7 +20,6 @@ public class AccountController {
         return accountService.getAllAccount();
     }
 
-    //http://localhost:8083/Account/get-Account/{id}
     @GetMapping("/get-Account/{account-id}")
     public Account getUserById(@PathVariable("account-id") Integer idAcc) {
         return accountService.getAccountById(idAcc);
