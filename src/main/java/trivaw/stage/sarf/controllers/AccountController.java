@@ -43,13 +43,6 @@ public class AccountController {
     }
 
 
-    /*@GetMapping("/filter")
-    public List<Account> filterAccount(@RequestParam Date dateCreation,
-                                           @RequestParam Integer amountTrans,
-                                           @RequestParam Integer Ageuser) {
-        return accountService.filterAccount(dateCreation, amountTrans, Ageuser);
-    }*/
-
      }
 
 
