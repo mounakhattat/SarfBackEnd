@@ -37,7 +37,6 @@ public class AccountController {
         return accountService.updateAccount(idAcc, a);
     }
 
-    //http://localhost:8083/Account/delete/{AccountId}
     @DeleteMapping("/delete/{id}")
     public void deleteAccount(@PathVariable("id") Integer idAcc) {
         accountService.deleteAccount(idAcc);
