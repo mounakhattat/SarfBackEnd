@@ -1,0 +1,25 @@
+version: "3"
+services:
+  springboot-app:
+    image: mounakhattat/pidev-4.0
+    restart: always
+    build: .
+    ports:
+      - 8066:8080 # Ajustez le port si nécessaire pour votre Spring Boot application
+    environment:
+      POSTGRES_HOST: postgresdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: sarfTN
+  postgresdb:
+    container_name: postgresdb
+    image: postgres:latest
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: sarfTN
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres

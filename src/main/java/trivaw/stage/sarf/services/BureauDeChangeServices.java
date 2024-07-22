@@ -27,11 +27,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 public class BureauDeChangeServices implements IBureauDeChangeServices {
-    private WebSocketSession webSocketSession;
 
 @Autowired
 UserService userService;
-WebSocketEndpoint webSocketEndpoint;
     @Autowired
     BureauDeChangeRepository bureauDeChangeRepository;
     @Autowired
