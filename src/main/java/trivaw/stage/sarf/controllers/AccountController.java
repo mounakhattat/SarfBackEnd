@@ -25,7 +25,6 @@ public class AccountController {
         return accountService.getAccountById(idAcc);
     }
 
-    //http://localhost:8083/Account/create-Account
     @PostMapping("/createAccount")
     public Account createAccount(@RequestBody Account a) {
         return accountService.createAccount(a);
