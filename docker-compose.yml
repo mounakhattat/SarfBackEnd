@@ -21,4 +21,4 @@ services:
     environment:
       POSTGRES_DB: sarfTN
       POSTGRES_PASSWORD: admin
-      
+
