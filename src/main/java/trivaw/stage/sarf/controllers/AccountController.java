@@ -30,7 +30,6 @@ public class AccountController {
         return accountService.createAccount(a);
     }
 
-    //http://localhost:8083/Account/update/{account-id}
     @PutMapping("/update/{account-id}")
     public Account updateAccount(@PathVariable("account-id") Integer idAcc, @RequestBody Account a) {
         return accountService.updateAccount(idAcc, a);
