@@ -110,6 +110,7 @@ public class SecurityConfig  implements WebMvcConfigurer { // extends WebSecurit
                 .antMatchers("/Reclamation/**").permitAll()
                 .antMatchers("/api/python/**").permitAll()
                 .antMatchers("/prometheus/**").permitAll()
+                .antMatchers("/**").permitAll()
 
 
 
