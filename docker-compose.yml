@@ -1,24 +1,25 @@
 version: "3"
 services:
   springboot-app:
-    # container_name: spring-app
     image: mounakhattat/pidev-4.0
     restart: always
     build: .
     ports:
-      - 8066:8080
+      - 8066:8080 # Ajustez le port si nécessaire pour votre Spring Boot application
     environment:
-      MYSQL_HOST: mysqldb
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
-      MYSQL_PORT: 3306
-  mysqldb:
-    container_name: mysqldb
-    image: mysql
+      POSTGRES_HOST: postgresdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: sarfTN
+  postgresdb:
+    container_name: postgresdb
+    image: postgres:latest
     volumes:
-      -  /home/sarfApp/DevopsProject/db:/var/lib/mysqll
+      - ./db:/var/lib/postgresql/data
     ports:
-      - 3307:3306
+      - 5432:5432
     environment:
-      MYSQL_DATABASE: sarfApp
-      MYSQL_ROOT_PASSWORD: root
+      POSTGRES_DB: sarfTN
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
