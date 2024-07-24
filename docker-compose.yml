@@ -5,7 +5,7 @@ services:
     restart: always
     build: .
     ports:
-      - 8066:8080
+      - 8066:8080 # Ajustez le port si nécessaire pour votre Spring Boot application
     environment:
       POSTGRES_HOST: postgresdb
       POSTGRES_USER: postgres
