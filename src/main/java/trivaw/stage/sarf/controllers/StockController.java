@@ -30,6 +30,10 @@ public class StockController {
         return stockService.findByDevise(devise);
     }
 
+    @GetMapping("/findStockDeviseByUser/{devise}/{idUser}")
+    public Stock findStockDeviseByUser(@PathVariable("devise") String devise , @PathVariable("idUser") Integer idUser) {
+        return stockService.findStockDeviseByUser(devise,idUser);
+    }
     @GetMapping("/getStockByUser/{idUser}")
     public List<Stock> getStockByUser(@PathVariable("idUser") Integer idUser){
         return stockService.getStockByUser(idUser);

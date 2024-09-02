@@ -63,8 +63,8 @@ public class ReservationController {
     public ResponseEntity<Reservation> addReservationAndSendToExchange(@RequestBody Reservation reservation,
                                                                        @PathVariable("idUser") Integer idUser,
                                                                        @PathVariable("idBureauDeChange") Integer idBureauDeChange,
-                                                                       @PathVariable("idTauxDeChange") Integer idTauxDeChange ,
-                                                                       @PathVariable("device") String device
+                                                                       @PathVariable("idTauxDeChange") Integer idTauxDeChange
+
                                                                        ) {
         // Récupérer l'utilisateur et attribuer à la réservation
         User user = userService.getUserById(idUser);

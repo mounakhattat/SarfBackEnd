@@ -6,6 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import trivaw.stage.sarf.Entities.Enchere;
 import trivaw.stage.sarf.services.EnchereService;
+
+import javax.mail.MessagingException;
+import java.io.IOException;
 import java.util.List;
 
 @CrossOrigin("*")
@@ -58,15 +61,15 @@ public class EnchereController {
     }
 
     @PostMapping("/participer/{idEnchere}/{tauxPropose}/{idUser}")
-    public ResponseEntity<?> participerEnchere(@PathVariable("idEnchere") Integer idEnchere, @PathVariable("tauxPropose") Double tauxPropose, @PathVariable("idUser") Integer idUser ) {
+    public ResponseEntity<?> participerEnchere(@PathVariable("idEnchere") Integer idEnchere, @PathVariable("tauxPropose") Double tauxPropose, @PathVariable("idUser") Integer idUser ) throws MessagingException,IOException {
         try {
             ResponseEntity<Enchere> enchere = enchereService.participerEnchere(idEnchere, tauxPropose, idUser);
-
             return ResponseEntity.ok().body(enchere);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
 
     @GetMapping("/topUsers")
     public ResponseEntity<?> getTopUsers() {

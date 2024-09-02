@@ -7,6 +7,7 @@ import org.springframework.web.socket.WebSocketSession;
 import trivaw.stage.sarf.Configuration.WebSocketEndpoint;
 import trivaw.stage.sarf.Entities.*;
 import trivaw.stage.sarf.repository.BureauDeChangeRepository;
+import trivaw.stage.sarf.repository.NotificationRepository;
 import trivaw.stage.sarf.repository.ReclamationRepository;
 import trivaw.stage.sarf.repository.UserRepository;
 
@@ -20,6 +21,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class ReclamationServices implements IReclamationServices {
+    @Autowired
+    NotificationRepository notificationRepository;
     @Autowired
     private ReclamationRepository reclamationRepository;
     @Autowired
@@ -61,7 +64,6 @@ public class ReclamationServices implements IReclamationServices {
     }
 
 
-
     @Override
     public Reclamation getReclamationById(Integer idAcc) {
         return reclamationRepository.findById(idAcc).orElse(null);
@@ -71,6 +73,7 @@ public class ReclamationServices implements IReclamationServices {
     public Reclamation createReclamation(Reclamation a) {
         return reclamationRepository.save(a);
     }
+
     @Override
     public Reclamation createReclamationTouristeToBureau(Reclamation reclamation, Integer idUser, Integer idBureau) {
         User utilisateur = userRepository.findById(idUser).get();
@@ -87,6 +90,7 @@ public class ReclamationServices implements IReclamationServices {
         reclamation.setDate(localDateTime);
         return reclamationRepository.save(reclamation);
     }
+
     @Override
     public Reclamation createReclamationTouristeToAdmin(Reclamation reclamation, Integer idUser) {
         User utilisateur = userRepository.findById(idUser).get();
@@ -98,10 +102,11 @@ public class ReclamationServices implements IReclamationServices {
         reclamation.setDate(localDateTime);
         return reclamationRepository.save(reclamation);
     }
+
     @Override
     public Reclamation createReclamationBureauToAdmin(Reclamation reclamation, Integer idBureau) {
 
-        User utilisateur =userRepository.findById(idBureau).get();
+        User utilisateur = userRepository.findById(idBureau).get();
         reclamation.setBureauDeChange(utilisateur);
         reclamation.setReclameur(utilisateur.getUsername());
         reclamation.setStatus(Status.EN_COURS);
@@ -110,6 +115,7 @@ public class ReclamationServices implements IReclamationServices {
         reclamation.setDate(localDateTime);
         return reclamationRepository.save(reclamation);
     }
+
     @Override
     public void deleteReclamation(Integer idReclamation) {
         reclamationRepository.deleteById(idReclamation);
@@ -117,25 +123,55 @@ public class ReclamationServices implements IReclamationServices {
 
 
     @Override
-    public Reclamation updateReclamation(Integer idReclamation, Reclamation a) throws IOException  {
+    public Reclamation updateReclamation(Integer idReclamation, Reclamation a) throws IOException {
         Reclamation existingReclamation = reclamationRepository.findById(idReclamation).orElse(null);
         if (existingReclamation != null) {
             existingReclamation.setStatus(a.getStatus());
+
+            if ("Système".equals(a.getResponsable())) {
+        if(a.getTouriste()!=null && a.getBureauDeChange()==null){
             Reclamation updatedReclamation = reclamationRepository.save(existingReclamation);
+
             sendMessageToTouristeForStatusReclamation(updatedReclamation);
+
+
+} else  {
+            Reclamation updatedReclamation = reclamationRepository.save(existingReclamation);
+
+
+            sendMessageAdminorStatusReclamation(updatedReclamation);
+}
+
+
+            }else {
+                Reclamation updatedReclamation = reclamationRepository.save(existingReclamation);
+
+                sendMessageToTouristeForStatusReclamation(updatedReclamation);
+
+
+            }
+            Reclamation updatedReclamation = reclamationRepository.save(existingReclamation);
+
             return updatedReclamation;
 
         } else {
             return null;
         }
     }
-
+//bureau envoie au touriste
     public void sendMessageToTouristeForStatusReclamation(Reclamation reclamation) throws IOException {
+
         Integer userId = reclamation.getTouriste().getIdUser();
         if (userId != null) {
             String reclamationMessageForTouriste = convertNotifToString(reclamation);
             CopyOnWriteArrayList<WebSocketSession> sessions = WebSocketEndpoint.getSessions();
-
+            Notification notification = new Notification();
+            notification.setMessage(reclamationMessageForTouriste);
+            notification.setUserr(reclamation.getTouriste());
+            LocalDateTime localDateTime = LocalDateTime.now(); // Convertit en Timestamp
+            notification.setDate(localDateTime);
+            notification.setType("Reclamation");
+            notificationRepository.save(notification);
             for (WebSocketSession session : sessions) {
                 if (session != null && session.isOpen()) {
                     URI uri = session.getUri();
@@ -150,6 +186,97 @@ public class ReclamationServices implements IReclamationServices {
             System.out.println("Erreur: l'ID de l'utilisateur est null.");
         }
     }
+
+
+
+    public void sendMessageToBureauForStatusReclamation(Reclamation reclamation) throws IOException {
+
+        Integer userId = reclamation.getBureauDeChange().getIdUser();
+        System.out.println(userId+"kjslllllllllhxdllllllll");
+        if (userId != null) {
+            String reclamationMessageForBureau = convertNotifToString(reclamation);
+            CopyOnWriteArrayList<WebSocketSession> sessions = WebSocketEndpoint.getSessions();
+            Notification notification = new Notification();
+            notification.setMessage(reclamationMessageForBureau);
+            notification.setUserr(reclamation.getBureauDeChange());
+            LocalDateTime localDateTime = LocalDateTime.now(); // Convertit en Timestamp
+            notification.setDate(localDateTime);
+            notification.setType("Reclamation");
+            notificationRepository.save(notification);
+            for (WebSocketSession session : sessions) {
+                if (session != null && session.isOpen()) {
+                    URI uri = session.getUri();
+                    Integer userIdFromUri = extractUserIdFromUri(uri);
+
+                    if (userIdFromUri != null && userIdFromUri.equals(userId)) {
+                        session.sendMessage(new TextMessage(reclamationMessageForBureau));
+                    }
+                }
+            }
+        } else {
+            System.out.println("Erreur: l'ID de l'utilisateur est null.");
+        }
+    }
+//admin envoie touriste et au bureau
+    public void sendMessageAdminorStatusReclamation(Reclamation reclamation) throws IOException {
+        Integer userAdmin = 5;
+        User user = userRepository.findById(userAdmin).get();
+
+        if (user != null) {
+            if (reclamation.getTouriste() != null) {
+                Integer userId = reclamation.getTouriste().getIdUser();
+
+                String reclamationMessageForTouriste = convertNotifToStringAdmin(reclamation);
+                CopyOnWriteArrayList<WebSocketSession> sessions = WebSocketEndpoint.getSessions();
+                Notification notification = new Notification();
+                notification.setMessage(reclamationMessageForTouriste);
+                notification.setUserr(reclamation.getTouriste());
+                LocalDateTime localDateTime = LocalDateTime.now(); // Convertit en Timestamp
+                notification.setDate(localDateTime);
+                notification.setType("Reclamation");
+                notificationRepository.save(notification);
+                for (WebSocketSession session : sessions) {
+                    if (session != null && session.isOpen()) {
+                        URI uri = session.getUri();
+                        Integer userIdFromUri = extractUserIdFromUri(uri);
+
+                        if (userIdFromUri != null && userIdFromUri.equals(userId)) {
+                            session.sendMessage(new TextMessage(reclamationMessageForTouriste));
+                        }
+                    }
+                }
+            } else {
+                Integer bureau = reclamation.getBureauDeChange().getIdUser();
+
+                String reclamationMessageForBureau = convertNotifToStringAdmin(reclamation);
+                CopyOnWriteArrayList<WebSocketSession> sessions = WebSocketEndpoint.getSessions();
+                Notification notification = new Notification();
+                notification.setMessage(reclamationMessageForBureau);
+                notification.setUserr(reclamation.getBureauDeChange());
+                LocalDateTime localDateTime = LocalDateTime.now(); // Convertit en Timestamp
+                notification.setDate(localDateTime);
+                notification.setType("Reclamation");
+                notificationRepository.save(notification);
+                for (WebSocketSession session : sessions) {
+                    if (session != null && session.isOpen()) {
+                        URI uri = session.getUri();
+                        Integer userIdFromUri = extractUserIdFromUri(uri);
+
+                        if (userIdFromUri != null && userIdFromUri.equals(bureau)) {
+                            session.sendMessage(new TextMessage(reclamationMessageForBureau));
+                        }
+                    }
+                }
+
+            }
+        }else {
+            System.out.println("Erreur: l'ID de l'utilisateur est null.");
+
+
+        }
+    }
+
+
     private Integer extractUserIdFromUri(URI uri) {
         String query = uri.getQuery();
         if (query != null) {
@@ -164,13 +291,25 @@ public class ReclamationServices implements IReclamationServices {
         return null;
     }
 
-    private String convertNotifToString(Reclamation reclamation ) {
-        BureauDeChange bureauDeChange = bureauDeChangeRepository.getBureauDeChangeByUser(reclamation.getBureauDeChange().getIdUser());
+    private String convertNotifToString(Reclamation reclamation) {
+        String reclamationMessageForTouriste;
 
-        String reclamationMessageForTouriste = "Reponse a votre demande de reclamation pour " + reclamation.getTitre() +" " + " chez " + bureauDeChange.getNom()+ " C'est: " + reclamation.getStatus()  ;
+            BureauDeChange bureauDeChange = bureauDeChangeRepository.getBureauDeChangeByUser(reclamation.getBureauDeChange().getIdUser());
+             reclamationMessageForTouriste = "Reponse a votre demande de reclamation pour " + reclamation.getTitre() + " " + " chez " + bureauDeChange.getNom() + " C'est: " + reclamation.getStatus();
 
 
         return reclamationMessageForTouriste;
+
+    }
+    //notif pour le touriste et bureau  d'apres Admin
+    private String convertNotifToStringAdmin(Reclamation reclamation) {
+        String reclamationMessageForTouriste;
+
+            reclamationMessageForTouriste = "Reponse a votre demande de reclamation pour " + reclamation.getTitre() + " " + " chez SARF " + " C'est: " + reclamation.getStatus();
+
+
+        return reclamationMessageForTouriste;
+
     }
 }
 

@@ -62,14 +62,18 @@ public class ReclamationController {
     }
 
     @PostMapping("/createReclamationBureauToAdmin/{idBureau}")
-    public ResponseEntity<Reclamation> createReclamationBureauToAdmin( @PathVariable("idBureau") Integer idBureau, @RequestBody Reclamation reclamation) {
+    public ResponseEntity<Reclamation> createReclamationBureauToAdmin( @PathVariable("idBureau") Integer idBureau, @RequestBody Reclamation reclamation)throws IOException {
         Reclamation avis=   iReclamationServices.createReclamationBureauToAdmin(reclamation, idBureau);
+        bureauDeChangeServices.sendMessageToAdminForReclamation(reclamation);
+
         return new ResponseEntity<>(avis, HttpStatus.CREATED);
     }
 
     @PostMapping("/createReclamationTouristeToAdmin/{idUser}")
-    public ResponseEntity<Reclamation> createReclamationTouristeToAdmin(@PathVariable("idUser") Integer idUser ,  @RequestBody Reclamation reclamation) {
+    public ResponseEntity<Reclamation> createReclamationTouristeToAdmin(@PathVariable("idUser") Integer idUser ,  @RequestBody Reclamation reclamation) throws IOException {
         Reclamation avis=   iReclamationServices.createReclamationTouristeToAdmin(reclamation, idUser );
+        bureauDeChangeServices.sendMessageToAdminForReclamation(reclamation);
+
         return new ResponseEntity<>(avis, HttpStatus.CREATED);
 
     }

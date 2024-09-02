@@ -12,5 +12,6 @@ public interface IEvaluationService {
 
     Evaluation saveEvaluation(Evaluation evaluation, Integer idUser, Integer idBureau) ;
     void deleteEvaluation(Integer idEvaluation);
+    List<Object[]> findTopBureausWithNotes();
 
 }

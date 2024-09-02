@@ -12,24 +12,24 @@ import trivaw.stage.sarf.Configuration.WebSocketEndpoint;
 import trivaw.stage.sarf.Entities.*;
 import trivaw.stage.sarf.Request.SignUp;
 import trivaw.stage.sarf.Responses.MessageResponse;
-import trivaw.stage.sarf.repository.BureauDeChangeRepository;
-import trivaw.stage.sarf.repository.ReservationRepository;
-import trivaw.stage.sarf.repository.TauxChangeRepository;
-import trivaw.stage.sarf.repository.UserRepository;
+import trivaw.stage.sarf.repository.*;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 public class BureauDeChangeServices implements IBureauDeChangeServices {
-
+@Autowired
+    NotificationRepository notificationRepository;
 @Autowired
 UserService userService;
+
     @Autowired
     BureauDeChangeRepository bureauDeChangeRepository;
     @Autowired
@@ -140,6 +140,7 @@ UserService userService;
 
     BureauDeChange bureauDeChange= new BureauDeChange();
     bureauDeChange.setUser(user);
+    bureauDeChange.setNom(user.getUsername());
     bureauDeChangeRepository.save(bureauDeChange);
     TauxDeChange tauxDeChange= new TauxDeChange();
     tauxDeChange.setBureauDeChange(bureauDeChange);
@@ -206,7 +207,14 @@ UserService userService;
         BureauDeChange bureauDeChange = getBureauDeChangeById(idBureauDeChange);
         Integer userId = bureauDeChange.getUser().getIdUser();
         String message = convertReservationToString(reservation,idUser); // Convert Reservation to String
+        Notification notification=new Notification();
+        notification.setMessage(message);
+        notification.setUserr(bureauDeChange.getUser());
+        LocalDateTime localDateTime = LocalDateTime.now(); // Convertit en Timestamp
+        notification.setDate(localDateTime);
+        notification.setType("Reservation");
 
+        notificationRepository.save(notification);
         if (userId != null) {
             CopyOnWriteArrayList<WebSocketSession> sessions = WebSocketEndpoint.getSessions();
             // Envoyer le message WebSocket à toutes les sessions
@@ -240,16 +248,49 @@ UserService userService;
         }
         return null;
     }
+    public void sendMessageToAdminForReclamation(Reclamation reclamation) throws IOException {
+        Integer userId = 5;
+        User user = userRepository.findById(userId).get();
+
+
+        String reclamationMessages = messageADMINForReclamation(reclamation); // Convert Reservation to String
+        Notification notification=new Notification();
+        notification.setMessage(reclamationMessages);
+        notification.setUserr(user);
+        LocalDateTime localDateTime = LocalDateTime.now(); // Convertit en Timestamp
+        notification.setDate(localDateTime);
+        notification.setType("Reclamation");
+        notificationRepository.save(notification);
+        if (user != null) {
+            CopyOnWriteArrayList<WebSocketSession> sessions = WebSocketEndpoint.getSessions();
+            // Envoyer le message WebSocket à toutes les sessions
+            for (WebSocketSession session : sessions) {
+                System.out.println(session + "oooooooooooooooooooooooooojjjjjj");
+
+                URI uri = session.getUri();
+                Integer userIdFromUri = extractUserIdFromUri(uri);
+
+                if (session != null && session.isOpen() && userIdFromUri != null && userIdFromUri.equals(userId)) {
+                    session.sendMessage(new TextMessage(reclamationMessages));
+                }
+            }
+        } else {
+            // Gérer le cas où le bureau de change n'est pas trouvé
+        }
+    }
 
     public void sendMessageToExchangeForReclamation(Reclamation reclamation, Integer idBureauDeChange , Integer idUser) throws IOException {
         User user = userRepository.findById(idBureauDeChange).get();
-
-
         BureauDeChange bureauDeChange = getBureauDeChangeByUser(user.getIdUser());
-
         Integer userId = bureauDeChange.getUser().getIdUser();
         String reclamationMessages = messageForReclamation(reclamation,idUser); // Convert Reservation to String
-
+        Notification notification=new Notification();
+        notification.setMessage(reclamationMessages);
+        notification.setUserr(bureauDeChange.getUser());
+        LocalDateTime localDateTime = LocalDateTime.now(); // Convertit en Timestamp
+        notification.setDate(localDateTime);
+        notification.setType("Reclamation");
+        notificationRepository.save(notification);
         if (userId != null) {
             CopyOnWriteArrayList<WebSocketSession> sessions = WebSocketEndpoint.getSessions();
             // Envoyer le message WebSocket à toutes les sessions
@@ -272,7 +313,7 @@ UserService userService;
         User user = userService.getUserById(idUser);
         String userId = user.getUsername();
 
-        String reservationString = "Vous avez une nouvelle reservation  de iji " +   reservation.getMontant() +" d après " + userId ;
+        String reservationString = "Vous avez une nouvelle reservation  de " +   reservation.getMontant() +" d après " + userId ;
 
 
         return reservationString;
@@ -281,8 +322,17 @@ UserService userService;
     private String messageForReclamation(Reclamation reclamation , Integer idUser) {
         User user = userService.getUserById(idUser);
         String userId = user.getUsername();
-        String reclamationMessages = "Vous avez une nouvelle reclamation d après " + userId ;
+        String sjt =reclamation.getTitre();
+        String reclamationMessages = "Vous avez une nouvelle reclamation concernant " + sjt +" d après " + userId ;
 
+
+        return reclamationMessages;
+    }
+    private String messageADMINForReclamation(Reclamation reclamation ) {
+        String userId = reclamation.getReclameur();
+        String sjt =reclamation.getTitre();
+
+        String reclamationMessages = "Vous avez une nouvelle reclamation concernant " + sjt +" d après " + userId ;
 
         return reclamationMessages;
     }

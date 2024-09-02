@@ -8,10 +8,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import trivaw.stage.sarf.Configuration.WebSocketEndpoint;
 import trivaw.stage.sarf.Entities.*;
-import trivaw.stage.sarf.repository.BureauDeChangeRepository;
-import trivaw.stage.sarf.repository.ReservationRepository;
-import trivaw.stage.sarf.repository.StockRepository;
-import trivaw.stage.sarf.repository.UserRepository;
+import trivaw.stage.sarf.repository.*;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -19,6 +16,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -28,6 +26,8 @@ public class ReservationService implements  IReservationService{
     private JavaMailSender emailSender;
     @Autowired
     private  StockService stockService;
+    @Autowired
+    NotificationRepository notificationRepository;
     @Autowired
     ReservationRepository reservationRepository;
     @Autowired
@@ -194,7 +194,14 @@ if(!comparaison) {
     public void sendMessageToUser(Reservation reservation , Integer idUser) throws IOException {
         Integer userId = reservation.getUser().getIdUser();
         String message = convertNotifToString(reservation,idUser); // Convert Reservation to String
-        ;
+        Notification notification=new Notification();
+        notification.setMessage(message);
+        notification.setUserr(reservation.getUser());
+        LocalDateTime localDateTime = LocalDateTime.now(); // Convertit en Timestamp
+        notification.setDate(localDateTime);
+        notification.setType("Reservation");
+
+        notificationRepository.save(notification);
         if (userId != null) {
             CopyOnWriteArrayList<WebSocketSession> sessions = WebSocketEndpoint.getSessions();
             // Envoyer le message WebSocket à toutes les sessions

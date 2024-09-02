@@ -8,6 +8,8 @@ import trivaw.stage.sarf.Entities.Enchere;
 import trivaw.stage.sarf.Entities.Evaluation;
 import trivaw.stage.sarf.services.EvaluationService;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,5 +46,18 @@ public class EvaluationController {
         evaluationService.deleteEvaluation(idEvaluation);
     }
 
+    @GetMapping("/top-notes")
+    public List<Map<String, Object>> getTopBureausWithNotes() {
+        List<Object[]> results = evaluationService.findTopBureausWithNotes();
+        List<Map<String, Object>> topBureaus = new ArrayList<>();
 
+        for (Object[] result : results) {
+            Map<String, Object> bureauData = new HashMap<>();
+            bureauData.put("bureauName", result[0]);
+            bureauData.put("totalNotes", result[1]);
+            topBureaus.add(bureauData);
+        }
+
+        return topBureaus;
+    }
 }

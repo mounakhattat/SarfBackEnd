@@ -79,6 +79,8 @@ public class EvaluationService implements IEvaluationService{
         evaluationRepository.deleteById(idEvaluation);
     }
 
-
-
+@Override
+    public List<Object[]> findTopBureausWithNotes() {
+        return evaluationRepository.findTopBureausWithNotes();
+    }
 }

@@ -33,6 +33,11 @@ public class StockService implements IStockService {
         return stockRepository.findByDevise(devise)
                 ;
     }
+
+    public Stock findStockDeviseByUser(String devise,Integer idUser) {
+        return stockRepository.findStockDeviseByUser(devise, idUser)
+                ;
+    }
     @Override
     public Stock createStock(Stock a) {
         return stockRepository.save(a);

@@ -16,4 +16,7 @@ public interface IStockService {
     Stock createStockByUser(Integer idUser,Stock a);
     List<Stock> updateStockByUser(Integer idUser, Stock a, Integer idStock);
     List<Stock> getDistinctDevisesByUserId(Integer idUser) ;
+
+    Stock findStockDeviseByUser(String a, Integer idUser);
+
 }

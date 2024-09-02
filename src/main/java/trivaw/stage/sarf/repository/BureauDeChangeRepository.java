@@ -24,4 +24,5 @@ public interface BureauDeChangeRepository extends JpaRepository<BureauDeChange,I
     @Query("SELECT b.user.idUser FROM BureauDeChange b WHERE b.nom=:nom")
   Integer getIdBureauWithNames(@Param("nom") String nom);
 
+
 }

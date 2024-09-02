@@ -12,7 +12,7 @@ public class PythonController {
     @GetMapping("/mouna/{currency}")
     public ResponseEntity<String> runPythonScript(@PathVariable String currency) {
         RestTemplate restTemplate = new RestTemplate();
-        String flaskUrl = "http://localhost:5002/mouna/" + currency;
+        String flaskUrl = "http://localhost:5007/mouna/" + currency;
 
         try {
             ResponseEntity<String> response = restTemplate.getForEntity(flaskUrl, String.class);

@@ -141,6 +141,9 @@ private Date bannedPeriode;
     @JsonIgnore
     @OneToMany(mappedBy = "bureauDeChange", cascade = CascadeType.ALL)
     private Set<Reclamation> reclamationsAsBureauDeChange;
+    @JsonIgnore
+    @OneToMany(mappedBy = "userr", cascade = CascadeType.ALL)
+    private List<Notification> notifications;
 
 
 }
