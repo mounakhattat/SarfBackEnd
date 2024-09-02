@@ -55,11 +55,10 @@ public class AuthController {
     private HttpSession session;
     @Autowired
     TwilioService twilioService;
-   // @Autowired
+
    // EmailVerificationTokenService emailVerificationTokenService;
     @Autowired
     JwtUtils jwtUtils;
-    // generer et valider le info de token
     @Autowired
     BureauDeChangeRepository bureauDeChangeRepository;
     @Autowired
