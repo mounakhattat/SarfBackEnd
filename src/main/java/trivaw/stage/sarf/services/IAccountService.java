@@ -12,6 +12,5 @@ public interface IAccountService {
     Account createAccount(Account a);
     Account updateAccount(Integer idAcc, Account a);
     void deleteAccount(Integer  idAcc);
-   // List<Account> filterAccount(Date dateCreation, Integer amountTrans, Integer Ageuser);
 
 }
