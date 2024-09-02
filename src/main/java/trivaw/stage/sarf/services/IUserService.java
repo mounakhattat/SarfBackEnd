@@ -31,7 +31,6 @@ public interface IUserService {
 
     // public User saveUser(String username, String password, String confirmedPassword,String role);
 
-    // public UserDetails loadUserByUsername(String username);
 
     // public void addRoleToUser(String username,String name);
 
