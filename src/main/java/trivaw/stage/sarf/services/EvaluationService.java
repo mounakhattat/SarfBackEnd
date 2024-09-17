@@ -59,7 +59,6 @@ public class EvaluationService implements IEvaluationService{
             evaluation.setDate(localDateTime);
             evaluation.setEvaluateur(utilisateur.getUsername());
             evaluation.calculateNote();
-        // Censure des mots interdits
         evaluation.setCommentaire(censurerCommentaire(evaluation.getCommentaire()));
 
         return evaluationRepository.save(evaluation);
