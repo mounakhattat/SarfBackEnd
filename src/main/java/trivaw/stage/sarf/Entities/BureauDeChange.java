@@ -25,8 +25,8 @@ public class BureauDeChange implements Serializable {
     private String evaluation;
     private Date bannedPeriod;
     private String country;
-private  Double latitude ;
-    private  Double longitude ;
+    private Double latitude ;
+    private Double longitude ;
 
     @JsonIgnore
     @OneToOne

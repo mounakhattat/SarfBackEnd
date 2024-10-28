@@ -64,10 +64,6 @@ private String role;
 
 
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
-    }
 
     public String getRole() {
         return role;
@@ -83,6 +79,11 @@ private String role;
 
     public String getEmail() {
         return email;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
     }
 
     @Override

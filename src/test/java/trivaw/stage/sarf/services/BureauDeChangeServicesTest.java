@@ -9,10 +9,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-//@SpringBootTest
+@SpringBootTest
 
 class BureauDeChangeServicesTest {
-    /*
+
 
 
     @Autowired
@@ -60,6 +60,6 @@ class BureauDeChangeServicesTest {
         assertEquals(3, bureaux.size());
     }
 
- */
+
 }
 
